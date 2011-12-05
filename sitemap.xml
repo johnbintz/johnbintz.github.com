@@ -4,20 +4,26 @@
         <loc>
             http://johnbintz.github.com/blog/2011/12/05/migrating-mail-from-old-citadel-server/
         </loc>
-        <lastmod>2011-12-05T10:12:05-05:00</lastmod>
+        <lastmod>2011-12-05T14:28:02-05:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://johnbintz.github.com/blog/2011/12/05/my-hypercool-automagic-rails-guard-setup/
+        </loc>
+        <lastmod>2011-12-05T16:15:55-05:00</lastmod>
     </url>
     <url>
         <loc>
             http://johnbintz.github.com/blog/2011/12/05/regeneration-self-signed-citadel-certificates/
         </loc>
-        <lastmod>2011-12-05T09:48:23-05:00</lastmod>
+        <lastmod>2011-12-05T14:28:08-05:00</lastmod>
     </url>
     <url>
         <loc>http://johnbintz.github.com/blog/archives/</loc>
-        <lastmod>2011-12-05T10:12:05-05:00</lastmod>
+        <lastmod>2011-12-05T16:15:55-05:00</lastmod>
     </url>
     <url>
         <loc>http://johnbintz.github.com/</loc>
-        <lastmod>2011-12-05T10:12:05-05:00</lastmod>
+        <lastmod>2011-12-05T16:15:55-05:00</lastmod>
     </url>
 </urlset>

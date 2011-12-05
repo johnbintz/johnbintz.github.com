@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2011-12-05T10:12:20-05:00</updated>
+  <updated>2011-12-05T16:15:56-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -38,6 +38,517 @@ service webcit start
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[My Hypercool Automagic Rails 3.1/Guard Setup]]></title>
+    <link href="http://johnbintz.github.com/blog/2011/12/05/my-hypercool-automagic-rails-guard-setup/"/>
+    <updated>2011-12-05T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2011/12/05/my-hypercool-automagic-rails-guard-setup</id>
+    <content type="html"><![CDATA[<p>Here&#8217;s a guide on how I set up all my Rails stuff. Having now written one, I can join the elite group of people who write guides on how they set up all
+their Rails stuff.</p>
+
+<h2>What this guide covers</h2>
+
+<ul>
+<li>Rails 3.1 gem setup for maximum automagic fun and less headdesking.</li>
+<li>Guard setup for guarding your Rails server, RSpec tests, JavaScript testing, and LiveReloading.</li>
+<li>Making <code>jasmine-headless-webkit</code>, your app, and Sprockets play nice.</li>
+<li>Precompiling your assets locally and shoving them up to your deploy location using Capistrano.</li>
+</ul>
+
+
+<h3>Why this approach?</h3>
+
+<p>&#8216;cause it works pretty well for me, and it&#8217;s my guide, so <em>there</em>.</p>
+
+<h2>Rails 3.1 Gem Setup</h2>
+
+<p>There are only two tricks: having <code>compass</code> load before <code>sass-rails</code> to ensure all the cool Compass bits actually work, and having all of your
+asset pipeline stuff <em>(all of it)</em> in a group called <code>:assets</code>, that also happens to be part of your <code>:development</code> group. Everything else
+is pretty straightforward. If you plan on using asset pipeline gems in your <code>jasmine-headless-webkit</code> setup, you can put them anywhere, as no specific
+groups are loaded or required when using JHW like they are with Rails:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">group</span> <span class="ss">:assets</span><span class="p">,</span> <span class="ss">:development</span> <span class="k">do</span>
+  <span class="n">gem</span> <span class="s1">&#39;compass&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 0.12.alpha&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;sass-rails&#39;</span>
+
+  <span class="n">gem</span> <span class="s1">&#39;jquery-rails&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;backbone-rails&#39;</span>
+  <span class="c1"># ... blah blah blah ...</span>
+<span class="k">end</span>
+
+<span class="n">group</span> <span class="ss">:development</span> <span class="k">do</span>
+  <span class="c1"># for js testing...</span>
+  <span class="n">gem</span> <span class="s1">&#39;jasmine-headless-webkit&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;jasmine-spec-extras&#39;</span>
+
+  <span class="c1"># for laziness...</span>
+  <span class="n">gem</span> <span class="s1">&#39;guard&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;guard-rails&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;guard-rspec&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;guard-jasmine-headless-webkit&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;guard-livereload&#39;</span>
+
+  <span class="c1"># for awesome rack middleware</span>
+  <span class="n">gem</span> <span class="s1">&#39;rack-livereload&#39;</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<h3>Why does order matter? It&#8217;s a Gemfile, right?</h3>
+
+<p>&#8216;cause Rails (roughly) does:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:default</span><span class="p">,</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span><span class="p">,</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_GROUPS&#39;</span><span class="o">]</span><span class="p">)</span>
+</code></pre>
+</div>
+
+
+<p>&#8230; which requires the files in your Gemfile in the order in which they are defined. If Compass defines the necessary asset pipeline stuff first,
+Sass-Rails won&#8217;t stomp on it and everything works all happy-like.</p>
+
+<h2>Guard setup</h2>
+
+<p>If you don&#8217;t know Guard, the you&#8217;re out of the loop. All the lazy programmers are using it. Any by &#8220;lazy&#8221; I mean super-cool.</p>
+
+<p>Create a <code>Guardfile</code> for your project by doing this in your shell:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="k">for </span>guard in rails rspec jasmine-headless-webkit livereload ; <span class="k">do</span>
+<span class="k">  </span>bundle <span class="nb">exec </span>guard init <span class="nv">$guard</span>
+<span class="k">done</span>
+</code></pre>
+</div>
+
+
+<p>Then, split those Guards up into groups. I typically have three: one for the Rails server and LiveReload, one for RSpec, and one for JHW:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">group</span> <span class="ss">:test</span> <span class="k">do</span>
+  <span class="n">guard</span> <span class="s1">&#39;rspec&#39;</span><span class="p">,</span> <span class="ss">:version</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">:all_on_start</span> <span class="o">=&gt;</span> <span class="kp">false</span> <span class="k">do</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^spec/.+_spec\.rb}</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="n">m</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="s1">&#39;/acceptance/&#39;</span><span class="o">]</span> <span class="p">?</span> <span class="kp">nil</span> <span class="p">:</span> <span class="n">m</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^lib/(.+)\.rb}</span><span class="p">)</span>     <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="s2">&quot;spec/lib/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">_spec.rb&quot;</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="s1">&#39;spec/spec_helper.rb&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="s2">&quot;spec&quot;</span> <span class="p">}</span>
+
+    <span class="c1"># Rails example</span>
+    <span class="n">watch</span><span class="p">(</span><span class="s1">&#39;spec/spec_helper.rb&#39;</span><span class="p">)</span>                       <span class="p">{</span> <span class="s2">&quot;spec&quot;</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="s1">&#39;app/controllers/application_controller.rb&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="s2">&quot;spec/controllers&quot;</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^app/(.+)\.rb}</span><span class="p">)</span>                           <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="s2">&quot;spec/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">_spec.rb&quot;</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^app/views/(.*)$}</span><span class="p">)</span>                        <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="s2">&quot;spec/views/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">_spec.rb&quot;</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^lib/(.+)\.rb}</span><span class="p">)</span>                           <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="s2">&quot;spec/lib/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">_spec.rb&quot;</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^app/controllers/(.+)_(controller)\.rb}</span><span class="p">)</span>  <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="o">[</span><span class="s2">&quot;spec/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2">s/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">_</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2">_spec.rb&quot;</span><span class="p">,</span> <span class="s2">&quot;spec/acceptance/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">_spec.rb&quot;</span><span class="o">]</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">group</span> <span class="ss">:js</span> <span class="k">do</span>
+  <span class="n">spec_location</span> <span class="o">=</span> <span class="s2">&quot;spec/javascripts/%s_spec&quot;</span>
+
+  <span class="n">guard</span> <span class="s1">&#39;jasmine-headless-webkit&#39;</span><span class="p">,</span> <span class="ss">:all_on_start</span> <span class="o">=&gt;</span> <span class="kp">false</span> <span class="k">do</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^app/assets/javascripts/(.*)\.(js|coffee)}</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="n">newest_js_file</span><span class="p">(</span><span class="n">spec_location</span> <span class="o">%</span> <span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^spec/javascripts/(.*)_spec\..*}</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="n">newest_js_file</span><span class="p">(</span><span class="n">spec_location</span> <span class="o">%</span> <span class="n">m</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{^spec/javascripts/.*_helper.coffee$}</span><span class="p">)</span> <span class="p">{</span> <span class="s2">&quot;spec/javascripts/**/*_spec.*&quot;</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">group</span> <span class="ss">:rails</span> <span class="k">do</span>
+  <span class="n">guard</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="ss">:force_run</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">:server</span> <span class="o">=&gt;</span> <span class="ss">:thin</span> <span class="k">do</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">/^Gemfile.lock$/</span><span class="p">)</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">/^config\/.*\.(rb|yml)$/</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="n">m</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="k">if</span> <span class="o">!</span><span class="n">m</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="s1">&#39;/locales/&#39;</span><span class="o">]</span> <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span><span class="p">,</span> <span class="ss">:grace_period</span> <span class="o">=&gt;</span> <span class="mi">1</span> <span class="k">do</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{app\/.+\.(erb|haml|jst|hamljs|coffee)$}</span><span class="p">)</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">%r{app/assets/stylesheets/(.*)$}</span><span class="p">)</span> <span class="p">{</span> <span class="s1">&#39;assets/application.css&#39;</span> <span class="p">}</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">/app\/helpers\/.+\.rb/</span><span class="p">)</span>
+    <span class="n">watch</span><span class="p">(</span><span class="sr">/config\/locales\/.+\.yml/</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>With the asset pipeline, you no longer need gems like <code>guard-coffeescript</code> or <code>guard-compass</code>, unless you&#8217;re doing something really special.</p>
+
+<h3>The <code>:test</code> group</h3>
+
+<p>This one&#8217;s pretty standard: re-run RSpec with every change to the program code. Shouldn&#8217;t need much
+explaining for this one.</p>
+
+<h3>The <code>:js</code> group</h3>
+
+<p>This one&#8217;s a lot like the RSpec setup: re-run Jasmine specs with every file change, configured to look in
+the most typical place that asset pipeline JavaScript files live in: <code>vendor/assets/javascripts</code>. If you&#8217;re
+also putting stuff into <code>lib/assets/javascripts</code> or <code>vendor/assets/javascripts</code> and want it to be part of
+the trigger for re-running <code>jasmine-headless-webkit</code>, then change that first line to:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">watch</span><span class="p">(</span><span class="sr">%r{^(app|lib|vendor)/assets/javascripts/(.*)\.(js|coffee)}</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="n">newest_js_file</span><span class="p">(</span><span class="n">spec_location</span> <span class="o">%</span> <span class="n">m</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="p">)</span> <span class="p">}</span>
+</code></pre>
+</div>
+
+
+<p>Note that this change <em>does not add these folders to your Rails Sprockets configuration nor to your
+<code>jasmine-headless-webkit</code> configuration.</em> It only tells Guard to look in those places for file operations so
+that it can execute code. <code>app</code>, <code>lib</code>, and <code>vendor</code> are automatically searched for by Rails, and they&#8217;re very
+easy to add to <code>jasmine-headless-webkit</code>, which is what we&#8217;ll get to in the next part.</p>
+
+<h3>The <code>:rails</code> group</h3>
+
+<p>This one has a little more meat to it. First: a few notes about the Rails guard and Rails 3.1:</p>
+
+<ul>
+<li>There used to be a definition for <code>lib/.*\.rb</code>, but that was before I learned about <code>require_dependency</code>, which
+flags &#8220;normal&#8221; Ruby files to be reloaded in development much like files in <code>app</code>. So if there&#8217;s some library file that, say, a model
+depends on, include it in your model code like this and it gets reloaded along with the parent code:</li>
+</ul>
+
+
+<div class="highlight"><pre><code class="ruby"><span class="n">require_dependency</span> <span class="s1">&#39;super_cool&#39;</span>
+
+<span class="k">class</span> <span class="nc">John</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">SuperCool</span>
+
+  <span class="c1"># ...codes...</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<ul>
+<li>Adding new locale files requires a restart of the server. That would be a good type of detection to add to <code>guard-rails</code>. If you
+want to see it, and I don&#8217;t do it fast enough, go ahead and add it. I like pull requests.</li>
+</ul>
+
+
+<p>Second, LiveReload. It&#8217;s not entirely magic, but getting it set up &#8220;just right&#8221; can be a little tricky. There are three parts to
+LiveReload:</p>
+
+<ul>
+<li>The LiveReload code, which has been moved to nice includable JavaScript in the latest version of LiveReload (before it was a browser extension).</li>
+<li>The inclusion of the LiveReload code into <code>text/html</code> pages, and any extra code to get a WebSocket connection working.</li>
+<li>A WebSocket server that accepts connections from browsers that are running the LiveReload code.</li>
+</ul>
+
+
+<p>With the asset pipeline, we want the following to happen:</p>
+
+<ul>
+<li>Reload only the appropriate stylesheet(s) when a Sass file is changed.</li>
+<li>Reload everything if a Ruby or CoffeeScript file is changed. I&#8217;m not a fan of just reloading JavaScript, sorry.</li>
+</ul>
+
+
+<p>Most apps will only have the one &#8220;main&#8221; CSS file, <code>application.css</code>. Every other Sass and CSS file gets shoved into that file via the asset pipeline, especially
+if you&#8217;re using Sass includes (which I do since they&#8217;re a lot more flexible than Sprockets ones). If you&#8217;re using Sprockets includes, enabling debug mode in
+Sprockets, which you should have on in development anyway, I believe would allow you to reload specific stylesheets, but I&#8217;m more of a fan of Sass includes, so
+there you go.</p>
+
+<p>This Guard LiveReload setup&#8230;</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span><span class="p">,</span> <span class="ss">:grace_period</span> <span class="o">=&gt;</span> <span class="mi">1</span> <span class="k">do</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{app\/.+\.(erb|haml|jst|hamljs|coffee)$}</span><span class="p">)</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{app/assets/stylesheets/(.*)$}</span><span class="p">)</span> <span class="p">{</span> <span class="s1">&#39;assets/application.css&#39;</span> <span class="p">}</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">/app\/helpers\/.+\.rb/</span><span class="p">)</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">/config\/locales\/.+\.yml/</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>&#8230;ensures that everything except changes to stylesheets reload the entire page. Stylesheet changes only reload the main CSS file. The <code>:grace_period</code>
+ensures that Sprockets compilation catches up to the file save operations that Guard watches for before actually triggering the reload. It can
+keep your browser from freaking out and reloading a ton of times on one save operation.</p>
+
+<h2>Sprockets, Rails, and <code>jasmine-headless-webkit</code>, sitting in a tree&#8230;</h2>
+
+<p>Sprockets is pretty cool, and it makes organizing JavaScript a lot easier. I also like super-fast unit testing, with Jasmine being my test framework of choice.
+There&#8217;s three JavaScript unit testing-related problems with the typical Rails setup, though:</p>
+
+<ul>
+<li>Any <code>.erb</code> files that get data from your Rails app require you to have your app up and running to pull the data out. That&#8217;s integration testing
+at that point, and I go into more detail about that on the <a href="http://johnbintz.github.com/jasmine-headless-webkit/"><code>jasmine-headless-webkit</code></a> site.</li>
+<li>Your Sprockets config lives in <code>config/application.rb</code> (or even deeper into specific Rails environments).</li>
+<li>Rails vendored JavaScript gems like <code>jquery-rails</code> let their presence be known with a Railtie.</li>
+</ul>
+
+
+<p>So <code>jasmine-headless-webkit</code> does the following, in order to make unit testing JavaScript code in a Rails/Sprockets application possible:</p>
+
+<ul>
+<li>It ignores <code>.erb</code> files unless your Sprockets requires are incorrect. You&#8217;ll know pretty quick if they are.</li>
+<li>It requires that you add your asset paths to <code>jasmine.yml</code>.</li>
+<li>All loaded gems are searched for <code>vendor/assets/javascripts</code> and any gems with that directory structure have that specific directory added to the Sprockets
+asset path.</li>
+</ul>
+
+
+<p>All of this is covered on the <a href="http://johnbintz.github.com/jasmine-headless-webkit/"><code>jasmine-headless-webkit</code></a> site &#8211; this guide will get you up and running
+without a ton of explanation.</p>
+
+<h3>Set up Jasmine</h3>
+
+<p>You can use <code>jasmine init</code> or <code>rails g jasmine:init</code>, but it&#8217;s a lot faster to just make <code>spec/javascripts/support/jasmine.yml</code> and add the following contents:</p>
+
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">src_dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">app/assets/javascripts</span>
+<span class="l-Scalar-Plain">asset_paths</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">lib/assets/javascripts</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">vendor/assets/javascripts</span>
+
+<span class="l-Scalar-Plain">src_files</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="s">&quot;**/*&quot;</span>
+
+<span class="l-Scalar-Plain">spec_dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">spec/javascripts</span>
+
+<span class="l-Scalar-Plain">spec_files</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="s">&quot;**/*[Ss]pec.*&quot;</span>
+
+<span class="l-Scalar-Plain">helpers</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="s">&quot;helpers/**/*&quot;</span>
+</code></pre>
+</div>
+
+
+<p>This adds <code>app/assets/javascripts</code>, <code>lib/assets/javascripts</code>, <code>vendor/assets/javascripts</code>, and <code>spec/javascripts</code> to the asset path, along with any other
+available vendored JavaScript directories within gems.</p>
+
+<p>If you added <code>jasmine-spec-extras</code> to your Gemfile, create <code>spec/javascripts/helpers/spec_helper.js.coffee</code> with:</p>
+
+<div class="highlight"><pre><code class="coffeescript"><span class="c1">#= require jasmine-jquery</span>
+<span class="c1">#= require sinon</span>
+</code></pre>
+</div>
+
+
+<p>This adds <code>jasmine-jquery</code> and Sinon.js to your project, two must-haves when testing JS- and Ajax-heavy applications.</p>
+
+<h3>Including JST templates</h3>
+
+<p>Sprockets already comes with a bunch of supported templating engines, which are included just the same as in the Rails app:</p>
+
+<div class="highlight"><pre><code class="coffeescript"><span class="c1">#= require backbone</span>
+<span class="c1">#= require views/my_app/template.jst.eco</span>
+
+<span class="k">class</span> <span class="nb">window</span><span class="p">.</span><span class="nx">MyApp</span> <span class="k">extends</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span>
+  <span class="nv">template: </span><span class="nx">JST</span><span class="p">[</span><span class="s1">&#39;views/my_app/template&#39;</span><span class="p">]</span>
+</code></pre>
+</div>
+
+
+<p><code>jasmine-headless-webkit</code> also watches out for <code>haml-sprockets</code> to be available, and if it is, it gets loaded and <code>.hamljs</code> templates become available:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># Gemfile</span>
+
+<span class="n">gem</span> <span class="s1">&#39;haml-sprockets&#39;</span>
+</code></pre>
+</div>
+
+
+
+
+<div class="highlight"><pre><code class="coffeescript"><span class="c1"># app/assets/views/my_app.js.coffee</span>
+<span class="c1">#</span>
+<span class="c1">#= require views/my_app/template.jst.hamljs</span>
+</code></pre>
+</div>
+
+
+<p><em>(want your templating engine added to JHW&#8217;s search? Open an issue or fork&#8217;n&#8217;fix!)</em></p>
+
+<h3>Including Rails data into your JavaScript</h3>
+
+<p>Since <code>.erb</code> templates don&#8217;t get parsed and can cause problems if included into <code>jasmine-headless-webkit</code>, you need to be careful about
+including them into your application. Here&#8217;s a few ways you could solve the problem if you really need that data in your JavaScript somewhere
+and don&#8217;t want to use Ajax. Both of these require that you stub out anything that would have normally come from Rails:</p>
+
+<h4>Put integration stuff into your view templates</h4>
+
+<p>For instance, giving Backbone Collections URLs dynamically:</p>
+
+<div class="highlight"><pre><code class="coffeescript"><span class="c1"># app/assets/javascripts/helpers/backbone_duck_puncher.js.coffee</span>
+
+<span class="nv">Backbone.Collection.prototype.initialize = </span><span class="nf">(models = [], options = {}) -&gt;</span>
+  <span class="vi">@url = </span><span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">||</span> <span class="nx">@url</span>
+</code></pre>
+</div>
+
+
+
+
+<div class="highlight"><pre><code class="haml"><span class="cp">-# app/views/my_app/list.html.haml</span>
+
+<span class="nf">#target</span>
+
+<span class="nd">:javascript</span>
+  <span class="nd">var collection = new MyApp.Things([], { url: &#39;&lt;%= things_path %&gt;&#39; });</span>
+  <span class="nd">(new MyApp.ThingsView(collection: collection, el: &#39;#target&#39;)).render()</span>
+</code></pre>
+</div>
+
+
+<p>This gives the added bonus of being able to make sure each use of a collection also has a real URL coming along with it:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># spec/views/my_app/list.html.haml_spec.rb</span>
+
+<span class="n">describe</span> <span class="s1">&#39;my_app/list.html.haml&#39;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s1">&#39;should render&#39;</span> <span class="k">do</span>
+    <span class="n">render</span>
+
+    <span class="n">rendered</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s1">&#39;MyApp.Things&#39;</span><span class="p">)</span>
+    <span class="n">rendered</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s1">&#39;MyApp.ThingsView&#39;</span><span class="p">)</span>
+    <span class="n">rendered</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="n">things_path</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<h4>Put the Rails stuff into an <code>.erb</code> file that JHW doesn&#8217;t see</h4>
+
+<pre><code>app/
+  assets/
+    javascripts/
+      my_app/
+      application.js.coffee     #=&gt; does require_tree 'my_app'
+      integration.js.coffee.erb #=&gt; requires nothing, just Rails data
+</code></pre>
+
+<div class="highlight"><pre><code class="haml"><span class="cp">-# layouts/application.html.haml</span>
+
+<span class="nn">!!!</span>
+<span class="nt">%html</span>
+  <span class="nt">%head</span>
+    <span class="p">=</span> <span class="n">javascript_include_tag</span> <span class="s1">&#39;application&#39;</span>
+    <span class="p">=</span> <span class="n">javascript_include_tag</span> <span class="s1">&#39;integration&#39;</span>
+</code></pre>
+</div>
+
+
+
+
+<div class="highlight"><pre><code class="yaml"><span class="c1"># jasmine.yml</span>
+
+<span class="l-Scalar-Plain">src_dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">app/assets/javascripts</span>
+<span class="l-Scalar-Plain">src_files</span><span class="p-Indicator">:</span>
+<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">application.js.coffee</span>
+</code></pre>
+</div>
+
+
+<p>So, pick your poison. Or, move to a solution integrated with Rails, like Evergreen or modern versions of the Jasmine gem.</p>
+
+<h3>Annyoing JavaScript</h3>
+
+<p>Unfortunately, out in the world there are still a lot of projects and code snippets that are just annyoing to plug into the
+asset pipeline. Things like WYSIWYG code editors, uploading tools, and lots of other projects that, while they work and can work very well,
+often do bad things to make themselves work. They may not play well with <code>jasmine-headless-webkit</code>, so I stick these <em>annoying JavaScript</em> projects
+into a <code>vendor-annoying/assets/javascripts</code> folder and only add that asset path to Rails&#8217;s config. Then, if I need to use those
+JavaScript files, I use a combination of both approaches above, along with just flat-out requiring those files using
+<code>javascript_include_tag</code>, to get them into the app while not getting them into JHW.</p>
+
+<h2>LiveReload&#8217;n</h2>
+
+<p>(modern versions of) LiveReload works by loading up a JavaScript file into browsers smart enough to know WebSockets, having the
+browser connect to a running LiveReload WS server, and waiting for notifications from the WS server instructing the browser to
+reload certain things, like just the CSS, just the JavaScript, or to reload the whole page.</p>
+
+<p><code>rack-livereload</code> is the easiest way to plug in LiveReload to the development environment of a running Rails app, and it has the
+additional advantage of bringing along a copy of <code>web-socket-js</code>, a WebSocket simulator for browsers that support Flash. So you
+can LiveReload away in non-bleeding edge browsers and on pretty much any mobile device, all at the same time.</p>
+
+<p>With <code>rack-livereload</code> in your Gemfile under <code>:development</code>, add the middleware to <code>config/initializers/development.rb</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">insert_before</span><span class="p">(</span><span class="no">Rack</span><span class="o">::</span><span class="no">Lock</span><span class="p">,</span> <span class="no">Rack</span><span class="o">::</span><span class="no">LiveReload</span><span class="p">)</span>
+</code></pre>
+</div>
+
+
+<p>Boot up your app, load a page in your favorite browser, and make sure you get the following:</p>
+
+<ul>
+<li>The LiveReload script injected into the source code of your page.</li>
+<li>Notifications in your console of LiveReload trying to connect to a server (or actually connecting if <code>guard-livereload</code> is running).</li>
+</ul>
+
+
+<p>Now, get <code>guard-livereload</code> running and change a file that it watches for. If everything is connected and working, the act of saving that
+file should reload any browsers attached to the LiveReload server.</p>
+
+<p>If it doesn&#8217;t reload, yet <code>guard-livereload</code> says it&#8217;s reloading something, try the following:</p>
+
+<ul>
+<li>Force-reload the browser manually to reconnect to the LiveReload server.</li>
+<li>Make sure the filenames getting passed to <code>guard-livereload</code> make sense. If you&#8217;re trying to reload a specific file like a stylesheet,
+try removing the specific file check and make sure that whole page reloading works first.</li>
+<li>Restart the whole Guard. The combination of <code>guard-livereload</code> and <code>rack-livereload</code> don&#8217;t like it when you just refresh the <code>Guardfile</code>.
+At least, that&#8217;s been my experience.</li>
+</ul>
+
+
+<h2>Production servers don&#8217;t need JavaScript runtimes</h2>
+
+<p>Back in the Barista/Jammit days, I always precompiled all my JavaScript code, since that was what you did. Also, the servers on which I was
+running some of my code were too old for building a JavaScript runtime like Node.js or <code>therubyracer</code>. While I&#8217;ve moved to Rails 3.1 and
+away from Barista and Jammit, those servers are still too old for a JS runtime. But I&#8217;m actually of the mindset that production servers
+don&#8217;t really need that runtime, since you can precompile everything locally and push it up using Capistrano, or (my favorite) just re-adding all
+those compiled assets to your Git repository on commit.</p>
+
+<p>There are definitely disadvantages to this approach:</p>
+
+<ul>
+<li>If your <code>.erb</code> code requires access to, say, the data on the remote production system, this definitely won&#8217;t work. I may ask why your
+JavaScript is tied so tightly to your database, but that&#8217;s for another time.</li>
+<li>It can make Git commits kinda big and noisy, especially if a lot of JavaScript is being changed. Typically I find that it&#8217;s just
+whatever files I&#8217;ve changed, along with the final compiled files and their <code>.gz</code> counterparts.</li>
+<li>Unless you&#8217;re using a Git hook to do the compilation, you&#8217;re going to forget to do it.</li>
+</ul>
+
+
+<p>But there&#8217;s one really nice advantage:</p>
+
+<ul>
+<li>My stupid little continuous deployment setup is super-fast, since all I have to do is the equivalent of <code>bundle exec cap latest deploy</code> on
+the Git server and away I go. No JS dependencies anywhere but my development machine.</li>
+</ul>
+
+
+<p>So it&#8217;s up to you how you want to do it. I&#8217;m just giving you the way that I prefer to put my assets together for production, staging, or
+continuous deployment.</p>
+
+<p>I use Git hooks like crazy. My <code>penchant</code> project use them to enforce test running before commit, and with that same approach, you can
+generate your assets destined for whichever environment you choose. <code>penchant</code> runs <code>bundle exec rake</code> and expects an exit code of 0.
+This means you can stack on some asset compilation code to your <code>Rakefile</code>&#8217;s default task, along with your test running (since you&#8217;re only
+running this task on Git commit, and your actual &#8220;testing&#8221; is done using Guard):</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">task</span> <span class="ss">:default</span> <span class="o">=&gt;</span> <span class="o">[</span> <span class="ss">:spec</span><span class="p">,</span> <span class="s1">&#39;jasmine:headless&#39;</span><span class="p">,</span> <span class="ss">:build_and_add_assets</span> <span class="o">]</span>
+
+<span class="n">task</span> <span class="ss">:build_and_add_assets</span> <span class="k">do</span>
+  <span class="nb">system</span> <span class="sx">%{bundle exec RAILS_ENV=production assets:precompile}</span>
+  <span class="nb">system</span> <span class="sx">%{git add public/assets}</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>When you have the Git hook <code>.git/hooks/pre-commit</code> running <code>bundle exec rake</code>, you&#8217;ll always be guaranteed to not only have correct code,
+but also to have compiled assets.</p>
+
+<h3>Annoying JavaScript, part 2</h3>
+
+<p>Just because you don&#8217;t have a JavaScript runtime on the remote server doesn&#8217;t mean you should turn off the asset pipeline on production.
+You could have more <em>annoying JavaScript</em> that you need to access. What you want to do is be careful not to include any CoffeeScript files
+(and if it&#8217;s an annoying JS project, trust me, they don&#8217;t have any). and keep the pipeline on. Oh, and disable the JS compressor.
+The stuff you care about compressing is already compressed from the operation above.</p>
+
+<h2>End of guide.</h2>
+
+<p>Now get to coding super-fast using Rails 3.1, asset pipelines, and other fun things!</p>
+
+<h2>History</h2>
+
+<ul>
+<li>0.9001: Hi, Scott.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Migrating mail from an older Citadel server to a new one]]></title>
     <link href="http://johnbintz.github.com/blog/2011/12/05/migrating-mail-from-old-citadel-server/"/>
     <updated>2011-12-05T00:00:00-05:00</updated>
@@ -46,6 +557,14 @@ service webcit start
 over-the-wire or XML support, so I&#8217;m doing it the hard way and copying messages from one to another over the network. I found
 <a href="http://www.athensfbc.com/imap_tools/">imapcopy.pl</a> which is getting the job done nicely. Everything else will have to come over manually,
 which will actualy be faster thatn trying to upgrade anything. :/</p>
+
+<p>A few observations:</p>
+
+<ul>
+<li>Clean out big mailboxes. My Sent Items folder had a ton of cruft that could be removed, and it made the process go a lot faster <em>(no wai)</em>.</li>
+<li>Turn on IMAP protocol watching, otherwise you won&#8217;t know if something&#8217;s actually broke or not.</li>
+</ul>
+
 ]]></content>
   </entry>
   
