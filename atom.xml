@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2011-12-05T09:58:34-05:00</updated>
+  <updated>2011-12-05T10:12:20-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -34,6 +34,18 @@ service webcit start
 
 
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Migrating mail from an older Citadel server to a new one]]></title>
+    <link href="http://johnbintz.github.com/blog/2011/12/05/migrating-mail-from-old-citadel-server/"/>
+    <updated>2011-12-05T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2011/12/05/migrating-mail-from-old-citadel-server</id>
+    <content type="html"><![CDATA[<p>I have an old Citadel server that I want to move mail from, the destination being a new Citadel server. The old server is older than the new
+over-the-wire or XML support, so I&#8217;m doing it the hard way and copying messages from one to another over the network. I found
+<a href="http://www.athensfbc.com/imap_tools/">imapcopy.pl</a> which is getting the job done nicely. Everything else will have to come over manually,
+which will actualy be faster thatn trying to upgrade anything. :/</p>
 ]]></content>
   </entry>
   
