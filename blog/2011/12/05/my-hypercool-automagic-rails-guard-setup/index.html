@@ -105,6 +105,10 @@ their Rails stuff.</p>
 
 <p>&#8216;cause it works pretty well for me, and it&#8217;s my guide, so <em>there</em>.</p>
 
+<h3><code>jasmine-headless-webkit</code> version requirements</h3>
+
+<p>The stuff in this guide requires at least version <em>0.8.3</em>. Make sure you&#8217;re using the most recent version if you wants the Sprockets goodness.</p>
+
 <h2>Rails 3.1 Gem Setup</h2>
 
 <p>There are only two tricks: having <code>compass</code> load before <code>sass-rails</code> to ensure all the cool Compass bits actually work, and having all of your
@@ -123,7 +127,7 @@ groups are loaded or required when using JHW like they are with Rails:</p>
 
 <span class="n">group</span> <span class="ss">:development</span> <span class="k">do</span>
   <span class="c1"># for js testing...</span>
-  <span class="n">gem</span> <span class="s1">&#39;jasmine-headless-webkit&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;jasmine-headless-webkit&#39;</span><span class="p">,</span> <span class="s1">&#39;~&gt; 0.8.0&#39;</span>
   <span class="n">gem</span> <span class="s1">&#39;jasmine-spec-extras&#39;</span>
 
   <span class="c1"># for laziness...</span>
@@ -398,85 +402,28 @@ available vendored JavaScript directories within gems.</p>
 
 <h3>Including Rails data into your JavaScript</h3>
 
-<p>Since <code>.erb</code> templates don&#8217;t get parsed and can cause problems if included into <code>jasmine-headless-webkit</code>, you need to be careful about
-including them into your application. Here&#8217;s a few ways you could solve the problem if you really need that data in your JavaScript somewhere
-and don&#8217;t want to use Ajax. Both of these require that you stub out anything that would have normally come from Rails:</p>
+<p>Short answer is, &#8220;you can&#8217;t.&#8221; <code>.erb</code> templates are outright ignored by <code>jasmine-headless-webkit</code>, since including that Rails data puts your
+tests firmly in the integration test arena. If you have data coming in via an <code>.erb</code> file, like constants, you&#8217;ll have to stub those in your
+test files:</p>
 
-<h4>Put integration stuff into your view templates</h4>
+<div class="highlight"><pre><code class="coffeescript"><span class="c1"># app/assets/constants.js.coffee.erb</span>
 
-<p>For instance, giving Backbone Collections URLs dynamically:</p>
-
-<div class="highlight"><pre><code class="coffeescript"><span class="c1"># app/assets/javascripts/helpers/backbone_duck_puncher.js.coffee</span>
-
-<span class="nv">Backbone.Collection.prototype.initialize = </span><span class="nf">(models = [], options = {}) -&gt;</span>
-  <span class="vi">@url = </span><span class="nx">options</span><span class="p">.</span><span class="nx">url</span> <span class="o">||</span> <span class="nx">@url</span>
+<span class="nb">window</span><span class="p">.</span><span class="nv">Something = </span><span class="o">&lt;%=</span> <span class="nx">Rails</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">to_json</span> <span class="o">%&gt;</span>
 </code></pre>
 </div>
 
 
 
 
-<div class="highlight"><pre><code class="haml"><span class="cp">-# app/views/my_app/list.html.haml</span>
+<div class="highlight"><pre><code class="coffeescript"><span class="c1"># spec/javascripts/helpers/constants.js.coffee</span>
 
-<span class="nf">#target</span>
-
-<span class="nd">:javascript</span>
-  <span class="nd">var collection = new MyApp.Things([], { url: &#39;&lt;%= things_path %&gt;&#39; });</span>
-  <span class="nd">(new MyApp.ThingsView(collection: collection, el: &#39;#target&#39;)).render()</span>
+<span class="nb">window</span><span class="p">.</span><span class="nv">Something =</span>
+  <span class="nv">stub: </span><span class="s2">&quot;data&quot;</span>
 </code></pre>
 </div>
 
 
-<p>This gives the added bonus of being able to make sure each use of a collection also has a real URL coming along with it:</p>
-
-<div class="highlight"><pre><code class="ruby"><span class="c1"># spec/views/my_app/list.html.haml_spec.rb</span>
-
-<span class="n">describe</span> <span class="s1">&#39;my_app/list.html.haml&#39;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s1">&#39;should render&#39;</span> <span class="k">do</span>
-    <span class="n">render</span>
-
-    <span class="n">rendered</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s1">&#39;MyApp.Things&#39;</span><span class="p">)</span>
-    <span class="n">rendered</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s1">&#39;MyApp.ThingsView&#39;</span><span class="p">)</span>
-    <span class="n">rendered</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="n">things_path</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre>
-</div>
-
-
-<h4>Put the Rails stuff into an <code>.erb</code> file that JHW doesn&#8217;t see</h4>
-
-<pre><code>app/
-  assets/
-    javascripts/
-      my_app/
-      application.js.coffee     #=&gt; does require_tree 'my_app'
-      integration.js.coffee.erb #=&gt; requires nothing, just Rails data
-</code></pre>
-
-<div class="highlight"><pre><code class="haml"><span class="cp">-# layouts/application.html.haml</span>
-
-<span class="nn">!!!</span>
-<span class="nt">%html</span>
-  <span class="nt">%head</span>
-    <span class="p">=</span> <span class="n">javascript_include_tag</span> <span class="s1">&#39;application&#39;</span>
-    <span class="p">=</span> <span class="n">javascript_include_tag</span> <span class="s1">&#39;integration&#39;</span>
-</code></pre>
-</div>
-
-
-
-
-<div class="highlight"><pre><code class="yaml"><span class="c1"># jasmine.yml</span>
-
-<span class="l-Scalar-Plain">src_dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">app/assets/javascripts</span>
-<span class="l-Scalar-Plain">src_files</span><span class="p-Indicator">:</span>
-<span class="p-Indicator">-</span> <span class="l-Scalar-Plain">application.js.coffee</span>
-</code></pre>
-</div>
-
-
-<p>So, pick your poison. Or, move to a solution integrated with Rails, like Evergreen or modern versions of the Jasmine gem.</p>
+<p>Remember that, in Jasmine&#8217;s loading scheme, helpers are always loaded before your specs, but after your code-under-test.</p>
 
 <h3>Annyoing JavaScript</h3>
 
@@ -589,6 +536,7 @@ The stuff you care about compressing is already compressed from the operation ab
 
 <ul>
 <li>0.9001: Hi, Scott.</li>
+<li>0.9002: Scott uses ADD FEATURE TO <code>jasmine-headless-webkit</code>. It&#8217;s super effective!</li>
 </ul>
 
 </div>
