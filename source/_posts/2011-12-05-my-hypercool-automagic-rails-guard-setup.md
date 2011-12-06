@@ -17,6 +17,10 @@ their Rails stuff.
 
 'cause it works pretty well for me, and it's my guide, so _there_.
 
+### `jasmine-headless-webkit` version requirements
+
+The stuff in this guide requires at least version *0.8.3*. Make sure you're using the most recent version if you wants the Sprockets goodness.
+
 ## Rails 3.1 Gem Setup
 
 There are only two tricks: having `compass` load before `sass-rails` to ensure all the cool Compass bits actually work, and having all of your
@@ -36,7 +40,7 @@ end
 
 group :development do
   # for js testing...
-  gem 'jasmine-headless-webkit'
+  gem 'jasmine-headless-webkit', '~> 0.8.0'
   gem 'jasmine-spec-extras'
 
   # for laziness...
@@ -278,84 +282,33 @@ _(want your templating engine added to JHW's search? Open an issue or fork'n'fix
 
 ### Including Rails data into your JavaScript
 
-Since `.erb` templates don't get parsed and can cause problems if included into `jasmine-headless-webkit`, you need to be careful about
-including them into your application. Here's a few ways you could solve the problem if you really need that data in your JavaScript somewhere
-and don't want to use Ajax. Both of these require that you stub out anything that would have normally come from Rails:
-
-#### Put integration stuff into your view templates
-
-For instance, giving Backbone Collections URLs dynamically:
+Short answer is, "you can't." `.erb` templates are outright ignored by `jasmine-headless-webkit`, since including that Rails data puts your
+tests firmly in the integration test arena. If you have data coming in via an `.erb` file, like constants, you'll have to stub those in your
+test files:
 
 {% highlight coffeescript %}
-# app/assets/javascripts/helpers/backbone_duck_puncher.js.coffee
+# app/assets/constants.js.coffee.erb
 
-Backbone.Collection.prototype.initialize = (models = [], options = {}) ->
-  @url = options.url || @url
+window.Something = <%= Rails.data.to_json %>
 {% endhighlight %}
 
-{% highlight haml %}
--# app/views/my_app/list.html.haml
+{% highlight coffeescript %}
+# spec/javascripts/helpers/constants.js.coffee
 
-#target
-
-:javascript
-  var collection = new MyApp.Things([], { url: '<%= things_path %>' });
-  (new MyApp.ThingsView(collection: collection, el: '#target')).render()
+window.Something =
+  stub: "data"
 {% endhighlight %}
 
-This gives the added bonus of being able to make sure each use of a collection also has a real URL coming along with it:
+Remember that, in Jasmine's loading scheme, helpers are always loaded before your specs, but after your code-under-test.
 
-{% highlight ruby %}
-# spec/views/my_app/list.html.haml_spec.rb
+### Annoying JavaScript
 
-describe 'my_app/list.html.haml' do
-  it 'should render' do
-    render
-
-    rendered.should include('MyApp.Things')
-    rendered.should include('MyApp.ThingsView')
-    rendered.should include(things_path)
-  end
-end
-{% endhighlight %}
-
-#### Put the Rails stuff into an `.erb` file that JHW doesn't see
-
-    app/
-      assets/
-        javascripts/
-          my_app/
-          application.js.coffee     #=> does require_tree 'my_app'
-          integration.js.coffee.erb #=> requires nothing, just Rails data
-
-{% highlight haml %}
--# layouts/application.html.haml
-
-!!!
-%html
-  %head
-    = javascript_include_tag 'application'
-    = javascript_include_tag 'integration'
-{% endhighlight %}
-
-{% highlight yaml %}
-# jasmine.yml
-
-src_dir: app/assets/javascripts
-src_files:
-- application.js.coffee
-{% endhighlight %}
-
-So, pick your poison. Or, move to a solution integrated with Rails, like Evergreen or modern versions of the Jasmine gem.
-
-### Annyoing JavaScript
-
-Unfortunately, out in the world there are still a lot of projects and code snippets that are just annyoing to plug into the
+Unfortunately, out in the world there are still a lot of projects and code snippets that are just annoying to plug into the
 asset pipeline. Things like WYSIWYG code editors, uploading tools, and lots of other projects that, while they work and can work very well,
 often do bad things to make themselves work. They may not play well with `jasmine-headless-webkit`, so I stick these _annoying JavaScript_ projects
 into a `vendor-annoying/assets/javascripts` folder and only add that asset path to Rails's config. Then, if I need to use those
-JavaScript files, I use a combination of both approaches above, along with just flat-out requiring those files using
-`javascript_include_tag`, to get them into the app while not getting them into JHW.
+JavaScript files, I either reference those files in an `.erb` file or just flat-out require those files using `javascript_include_tag`,
+to get them into the app while not getting them into JHW.
 
 ## LiveReload'n
 
@@ -400,7 +353,7 @@ those compiled assets to your Git repository on commit.
 There are definitely disadvantages to this approach:
 
 * If your `.erb` code requires access to, say, the data on the remote production system, this definitely won't work. I may ask why your
-  JavaScript is tied so tightly to your database, but that's for another time.
+  generated JavaScript is tied so tightly to your database, but that's for another time.
 * It can make Git commits kinda big and noisy, especially if a lot of JavaScript is being changed. Typically I find that it's just
   whatever files I've changed, along with the final compiled files and their `.gz` counterparts.
 * Unless you're using a Git hook to do the compilation, you're going to forget to do it.
@@ -444,4 +397,4 @@ Now get to coding super-fast using Rails 3.1, asset pipelines, and other fun thi
 ## History
 
 * 0.9001: Hi, Scott.
-
+* 0.9002: Scott uses ADD FEATURE TO `jasmine-headless-webkit`. It's super effective!
