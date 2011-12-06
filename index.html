@@ -484,14 +484,14 @@ test files:</p>
 
 <p>Remember that, in Jasmine&#8217;s loading scheme, helpers are always loaded before your specs, but after your code-under-test.</p>
 
-<h3>Annyoing JavaScript</h3>
+<h3>Annoying JavaScript</h3>
 
-<p>Unfortunately, out in the world there are still a lot of projects and code snippets that are just annyoing to plug into the
+<p>Unfortunately, out in the world there are still a lot of projects and code snippets that are just annoying to plug into the
 asset pipeline. Things like WYSIWYG code editors, uploading tools, and lots of other projects that, while they work and can work very well,
 often do bad things to make themselves work. They may not play well with <code>jasmine-headless-webkit</code>, so I stick these <em>annoying JavaScript</em> projects
 into a <code>vendor-annoying/assets/javascripts</code> folder and only add that asset path to Rails&#8217;s config. Then, if I need to use those
-JavaScript files, I use a combination of both approaches above, along with just flat-out requiring those files using
-<code>javascript_include_tag</code>, to get them into the app while not getting them into JHW.</p>
+JavaScript files, I either reference those files in an <code>.erb</code> file or just flat-out require those files using <code>javascript_include_tag</code>,
+to get them into the app while not getting them into JHW.</p>
 
 <h2>LiveReload&#8217;n</h2>
 
@@ -544,7 +544,7 @@ those compiled assets to your Git repository on commit.</p>
 
 <ul>
 <li>If your <code>.erb</code> code requires access to, say, the data on the remote production system, this definitely won&#8217;t work. I may ask why your
-JavaScript is tied so tightly to your database, but that&#8217;s for another time.</li>
+generated JavaScript is tied so tightly to your database, but that&#8217;s for another time.</li>
 <li>It can make Git commits kinda big and noisy, especially if a lot of JavaScript is being changed. Typically I find that it&#8217;s just
 whatever files I&#8217;ve changed, along with the final compiled files and their <code>.gz</code> counterparts.</li>
 <li>Unless you&#8217;re using a Git hook to do the compilation, you&#8217;re going to forget to do it.</li>
