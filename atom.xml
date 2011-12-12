@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2011-12-06T09:47:58-05:00</updated>
+  <updated>2011-12-12T10:20:48-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Jasmine Headless WebKit Presentation]]></title>
+    <link href="http://johnbintz.github.com/blog/2011/12/12/jhw-presentation/"/>
+    <updated>2011-12-12T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2011/12/12/jhw-presentation</id>
+    <content type="html"><![CDATA[<p>If you&#8217;re looking for the current iteration of my <a href="http://johnbintz.github.com/jasmine-headless-webkit/">Jasmine Headless WebKit</a> presentation, which
+covers more nuts and bolts of JHW rather than Jasmine itself, it&#8217;s here: <a href="http://johnbintz.github.com/jasmine-headless-webkit-presentation">http://johnbintz.github.com/jasmine-headless-webkit-presentation</a></p>
+
+<p>Even if JS testing isn&#8217;t your thing, I do have a few cool things going on in here:</p>
+
+<ul>
+<li>I&#8217;m using a custom Guard that uses Sprockets to regenerate the presentation&#8217;s CSS and JS</li>
+<li>I have Solarized Light colors on whatever I can style</li>
+<li>I plugged Rack::LiveReload in front of ShowOff so the browser reloads as I work on the slides</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Regenerating Self-Signed Citadel Certificates]]></title>
