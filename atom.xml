@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2011-12-20T21:08:26-05:00</updated>
+  <updated>2011-12-20T21:14:57-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -36,7 +36,11 @@ And here&#8217;s one of a coworker wearing reindeer antlers, fingerpainted in Sk
     <link href="http://johnbintz.github.com/blog/2011/12/14/net-imap-ssl-verify-mode/"/>
     <updated>2011-12-14T00:00:00-05:00</updated>
     <id>http://johnbintz.github.com/blog/2011/12/14/net-imap-ssl-verify-mode</id>
-    <content type="html"><![CDATA[For `SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)`:
+    <content type="html"><![CDATA[Get this error doing IMAP stuff?
+
+<p><code>SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)</code></p>
+
+Try this:
 
 <div class="highlight"><pre><code class="ruby"><span class="no">Net</span><span class="o">::</span><span class="no">IMAP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="ss">:ssl</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:verify_mode</span> <span class="o">=&gt;</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">SSL</span><span class="o">::</span><span class="no">VERIFY_NONE</span> <span class="p">})</span>
 </code></pre>

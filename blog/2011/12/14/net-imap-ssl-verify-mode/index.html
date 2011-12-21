@@ -9,7 +9,7 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="For `SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)`: Net::IMAP.new(host, : &hellip;">
+  <meta name="description" content="Get this error doing IMAP stuff? SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL:: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,7 +88,11 @@
   </header>
 
 
-<div class="entry-content">For `SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)`:
+<div class="entry-content">Get this error doing IMAP stuff?
+
+<p><code>SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)</code></p>
+
+Try this:
 
 <div class="highlight"><pre><code class="ruby"><span class="no">Net</span><span class="o">::</span><span class="no">IMAP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="ss">:ssl</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:verify_mode</span> <span class="o">=&gt;</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">SSL</span><span class="o">::</span><span class="no">VERIFY_NONE</span> <span class="p">})</span>
 </code></pre>
