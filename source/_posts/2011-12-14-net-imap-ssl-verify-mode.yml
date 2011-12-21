@@ -1,0 +1,10 @@
+---
+title: Net::IMAP SSL Verify Mode
+layout: post
+---
+For `SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)`:
+
+{% highlight ruby %}
+Net::IMAP.new(host, :ssl => { :verify_mode => OpenSSL::SSL::VERIFY_NONE })
+{% endhighlight %}
+
