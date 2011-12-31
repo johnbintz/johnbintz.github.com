@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2011-12-20T21:14:57-05:00</updated>
+  <updated>2011-12-31T11:48:55-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[SketchBook Comics - "Bad At Comebacks"]]></title>
+    <link href="http://johnbintz.github.com/blog/2011/12/31/sketchbook-comic-bad-at-comebacks/"/>
+    <updated>2011-12-31T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2011/12/31/sketchbook-comic-bad-at-comebacks</id>
+    <content type="html"><![CDATA[Here&#8217;s a comic I did in SketchBook for Android, which seriously needs more layers and
+the ability to change the canvas size:
+
+<img src="http://johnbintz.github.com/assets/sketchbook-comics/dawn-bad-at-comebacks.jpg"><br />
+
+Thanks to a certain boss of mine for providing the capacitive touch stylus.
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Christmas Party Drawings]]></title>
