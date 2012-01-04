@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-01-03T11:36:41-05:00</updated>
+  <updated>2012-01-04T13:36:55-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[New Years Resolution #1]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/01/04/new-years-resolution-one/"/>
+    <updated>2012-01-04T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/01/04/new-years-resolution-one</id>
+    <content type="html"><![CDATA[<p>Pay off the technical debt, especially in my test suites.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Experiment: Cucumber step definitions in separate files]]></title>
