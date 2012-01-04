@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2011-12-31T11:48:55-05:00</updated>
+  <updated>2012-01-03T11:36:41-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -14,16 +14,71 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Experiment: Cucumber step definitions in separate files]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/01/03/cucumber-step-definitions-in-separate-files/"/>
+    <updated>2012-01-03T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/01/03/cucumber-step-definitions-in-separate-files</id>
+    <content type="html"><![CDATA[<p>I&#8217;ve been getting back into using <a href="http://cukes.info/">Cucumber</a> for integration/acceptance testing,
+but I didn&#8217;t want to repeat one of the mistakes I made in the past: bloated step definition files.
+There were often step definitions I wanted to use globally for things like making files and such, and
+I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step definitions anymore.</p>
+
+<p>So instead of having a setup like this:</p>
+
+<pre><code>features/
+  step_definitions/
+    foo_steps.rb
+    bar_steps.rb
+  foo.feature
+  bar.feature
+</code></pre>
+
+<p>With <code>foo_steps.rb</code> containing code like this:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="no">Given</span><span class="sr"> /I have a cat/</span> <span class="k">do</span>
+  <span class="vi">@cat</span> <span class="o">=</span> <span class="no">Cat</span><span class="o">.</span><span class="n">new</span>
+<span class="k">end</span>
+
+<span class="no">When</span><span class="sr"> /I pet the cat/</span> <span class="k">do</span>
+  <span class="vi">@result</span> <span class="o">=</span> <span class="vi">@cat</span><span class="o">.</span><span class="n">pet</span>
+<span class="k">end</span>
+
+<span class="no">Then</span><span class="sr"> /the cat should not have hissed/</span> <span class="k">do</span>
+  <span class="vi">@cat</span><span class="o">.</span><span class="n">should_not</span> <span class="n">have_hissed</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>I am now trying this:</p>
+
+<pre><code>features/
+  step_definitions/
+    given/
+      i_have_a_cat.rb
+    when/
+      i_pet_the_cat.rb
+    then/
+      cat_should_not_have_hissed.rb
+  foo.feature
+  bar.feature
+</code></pre>
+
+<p>It seems to be working so far, but we&#8217;ll see how it scales.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[SketchBook Comics - "Bad At Comebacks"]]></title>
     <link href="http://johnbintz.github.com/blog/2011/12/31/sketchbook-comic-bad-at-comebacks/"/>
     <updated>2011-12-31T00:00:00-05:00</updated>
     <id>http://johnbintz.github.com/blog/2011/12/31/sketchbook-comic-bad-at-comebacks</id>
-    <content type="html"><![CDATA[Here&#8217;s a comic I did in SketchBook for Android, which seriously needs more layers and
-the ability to change the canvas size:
+    <content type="html"><![CDATA[<p>Here&#8217;s a comic I did in SketchBook for Android, which seriously needs more layers and
+the ability to change the canvas size:</p>
 
-<img src="http://johnbintz.github.com/assets/sketchbook-comics/dawn-bad-at-comebacks.jpg"><br />
+<p><img src="http://johnbintz.github.com/assets/sketchbook-comics/dawn-bad-at-comebacks.jpg"><br /></p>
 
-Thanks to a certain boss of mine for providing the capacitive touch stylus.
+<p>Thanks to a certain boss of mine for providing the capacitive touch stylus.</p>
 ]]></content>
   </entry>
   
@@ -32,16 +87,15 @@ Thanks to a certain boss of mine for providing the capacitive touch stylus.
     <link href="http://johnbintz.github.com/blog/2011/12/20/christmas-party-drawings/"/>
     <updated>2011-12-20T00:00:00-05:00</updated>
     <id>http://johnbintz.github.com/blog/2011/12/20/christmas-party-drawings</id>
-    <content type="html"><![CDATA[Every year at work I draw on the whiteboard in whatever room we have our Christmas party in. Here&#8217;s this year&#8217;s
-result, including hastily fingerpainted thumbnail done in Sketchbook:
+    <content type="html"><![CDATA[<p>Every year at work I draw on the whiteboard in whatever room we have our Christmas party in. Here&#8217;s this year&#8217;s
+result, including hastily fingerpainted thumbnail done in Sketchbook:</p>
 
-<img src="http://johnbintz.github.com/assets/christmas-drawings-2011/whiteboard-thumbnail.png"><br />
-<img src="http://johnbintz.github.com/assets/christmas-drawings-2011/whiteboard-inks.jpg"><br />
+<p><img src="http://johnbintz.github.com/assets/christmas-drawings-2011/whiteboard-thumbnail.png"><br />
+<img src="http://johnbintz.github.com/assets/christmas-drawings-2011/whiteboard-inks.jpg"><br /></p>
 
-And here&#8217;s one of a coworker wearing reindeer antlers, fingerpainted in Sketchbook:
+<p>And here&#8217;s one of a coworker wearing reindeer antlers, fingerpainted in Sketchbook:</p>
 
-<img src="http://johnbintz.github.com/assets/christmas-drawings-2011/kelly-reindeer.jpg"><br />
-
+<p><img src="http://johnbintz.github.com/assets/christmas-drawings-2011/kelly-reindeer.jpg"><br /></p>
 ]]></content>
   </entry>
   
@@ -50,15 +104,17 @@ And here&#8217;s one of a coworker wearing reindeer antlers, fingerpainted in Sk
     <link href="http://johnbintz.github.com/blog/2011/12/14/net-imap-ssl-verify-mode/"/>
     <updated>2011-12-14T00:00:00-05:00</updated>
     <id>http://johnbintz.github.com/blog/2011/12/14/net-imap-ssl-verify-mode</id>
-    <content type="html"><![CDATA[Get this error doing IMAP stuff?
+    <content type="html"><![CDATA[<p>Get this error doing IMAP stuff?</p>
 
 <p><code>SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)</code></p>
 
-Try this:
+
+<p>Try this:</p>
 
 <div class="highlight"><pre><code class="ruby"><span class="no">Net</span><span class="o">::</span><span class="no">IMAP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="ss">:ssl</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:verify_mode</span> <span class="o">=&gt;</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">SSL</span><span class="o">::</span><span class="no">VERIFY_NONE</span> <span class="p">})</span>
 </code></pre>
 </div>
+
 
 
 ]]></content>

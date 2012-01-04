@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>SketchBook Comics - "Bad At Comebacks" - My webzone</title>
+  <title>Experiment: Cucumber step definitions in separate files - My webzone</title>
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Here&#8217;s a comic I did in SketchBook for Android, which seriously needs more layers and
-the ability to change the canvas size: Thanks to a &hellip;">
+  <meta name="description" content="I&#8217;ve been getting back into using Cucumber for integration/acceptance testing,
+but I didn&#8217;t want to repeat one of the mistakes I made in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ the ability to change the canvas size: Thanks to a &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://johnbintz.github.com/blog/2011/12/31/sketchbook-comic-bad-at-comebacks">
+  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/01/03/cucumber-step-definitions-in-separate-files">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -66,7 +66,7 @@ the ability to change the canvas size: Thanks to a &hellip;">
   
   <header>
     
-      <h1 class="entry-title">SketchBook Comics - "Bad at Comebacks"</h1>
+      <h1 class="entry-title">Experiment: Cucumber Step Definitions in Separate Files</h1>
     
     
       <p class="meta">
@@ -82,19 +82,60 @@ the ability to change the canvas size: Thanks to a &hellip;">
   
 
 
-<time datetime="2011-12-31T00:00:00-05:00" pubdate data-updated="true">Dec 31<span>st</span>, 2011</time>
+<time datetime="2012-01-03T00:00:00-05:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Here&#8217;s a comic I did in SketchBook for Android, which seriously needs more layers and
-the ability to change the canvas size:</p>
+<div class="entry-content"><p>I&#8217;ve been getting back into using <a href="http://cukes.info/">Cucumber</a> for integration/acceptance testing,
+but I didn&#8217;t want to repeat one of the mistakes I made in the past: bloated step definition files.
+There were often step definitions I wanted to use globally for things like making files and such, and
+I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step definitions anymore.</p>
 
-<p><img src="/assets/sketchbook-comics/dawn-bad-at-comebacks.jpg"><br /></p>
+<p>So instead of having a setup like this:</p>
 
-<p>Thanks to a certain boss of mine for providing the capacitive touch stylus.</p>
+<pre><code>features/
+  step_definitions/
+    foo_steps.rb
+    bar_steps.rb
+  foo.feature
+  bar.feature
+</code></pre>
+
+<p>With <code>foo_steps.rb</code> containing code like this:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="no">Given</span><span class="sr"> /I have a cat/</span> <span class="k">do</span>
+  <span class="vi">@cat</span> <span class="o">=</span> <span class="no">Cat</span><span class="o">.</span><span class="n">new</span>
+<span class="k">end</span>
+
+<span class="no">When</span><span class="sr"> /I pet the cat/</span> <span class="k">do</span>
+  <span class="vi">@result</span> <span class="o">=</span> <span class="vi">@cat</span><span class="o">.</span><span class="n">pet</span>
+<span class="k">end</span>
+
+<span class="no">Then</span><span class="sr"> /the cat should not have hissed/</span> <span class="k">do</span>
+  <span class="vi">@cat</span><span class="o">.</span><span class="n">should_not</span> <span class="n">have_hissed</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>I am now trying this:</p>
+
+<pre><code>features/
+  step_definitions/
+    given/
+      i_have_a_cat.rb
+    when/
+      i_pet_the_cat.rb
+    then/
+      cat_should_not_have_hissed.rb
+  foo.feature
+  bar.feature
+</code></pre>
+
+<p>It seems to be working so far, but we&#8217;ll see how it scales.</p>
 </div>
 
 
@@ -117,7 +158,7 @@ the ability to change the canvas size:</p>
   
 
 
-<time datetime="2011-12-31T00:00:00-05:00" pubdate data-updated="true">Dec 31<span>st</span>, 2011</time>
+<time datetime="2012-01-03T00:00:00-05:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2012</time>
       
 
 
@@ -125,7 +166,7 @@ the ability to change the canvas size:</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2011/12/31/sketchbook-comic-bad-at-comebacks/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2011/12/31/sketchbook-comic-bad-at-comebacks/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/01/03/cucumber-step-definitions-in-separate-files/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/01/03/cucumber-step-definitions-in-separate-files/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -136,10 +177,8 @@ the ability to change the canvas size:</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/12/20/christmas-party-drawings/" title="Previous Post: Christmas Party Drawings">&laquo; Christmas Party Drawings</a>
+        <a class="basic-alignment left" href="/blog/2011/12/31/sketchbook-comic-bad-at-comebacks/" title="Previous Post: SketchBook Comics - "Bad At Comebacks"">&laquo; SketchBook Comics - "Bad At Comebacks"</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/01/03/cucumber-step-definitions-in-separate-files/" title="next Post: Experiment: Cucumber step definitions in separate files">Experiment: Cucumber step definitions in separate files &raquo;</a>
       
     </p>
   </footer>

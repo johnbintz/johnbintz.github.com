@@ -88,15 +88,17 @@
   </header>
 
 
-<div class="entry-content">Get this error doing IMAP stuff?
+<div class="entry-content"><p>Get this error doing IMAP stuff?</p>
 
 <p><code>SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)</code></p>
 
-Try this:
+
+<p>Try this:</p>
 
 <div class="highlight"><pre><code class="ruby"><span class="no">Net</span><span class="o">::</span><span class="no">IMAP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="ss">:ssl</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:verify_mode</span> <span class="o">=&gt;</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">SSL</span><span class="o">::</span><span class="no">VERIFY_NONE</span> <span class="p">})</span>
 </code></pre>
 </div>
+
 
 
 </div>
@@ -156,6 +158,10 @@ Try this:
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/cucumber-step-definitions-in-separate-files/">Experiment: Cucumber step definitions in separate files</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2011/12/31/sketchbook-comic-bad-at-comebacks/">SketchBook Comics - "Bad At Comebacks"</a>
@@ -252,7 +258,7 @@ Try this:
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2011 - John Bintz -
+  Copyright &copy; 2012 - John Bintz -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
