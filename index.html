@@ -9,8 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Pay off the technical debt, especially in my test suites.
-">
+  <meta name="description" content="Because who wants to recompile all their assets on each run? features/support/env.rb Capybara.server_port = 3001
+Capybara.app_host = &quot;http:// &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +63,62 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/">Cucumber, Capybara, and Rails Asset Pipeline in Debug Mode</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-07T00:00:00-05:00" pubdate data-updated="true">Jan 7<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Because who wants to recompile all their assets on each run?</p>
+
+<h2>features/support/env.rb</h2>
+
+<div class="highlight"><pre><code class="ruby"><span class="no">Capybara</span><span class="o">.</span><span class="n">server_port</span> <span class="o">=</span> <span class="mi">3001</span>
+<span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:3001&quot;</span>
+</code></pre>
+</div>
+
+
+<h2>config/environments/cucumber.rb</h2>
+
+<div class="highlight"><pre><code class="ruby">  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kp">true</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kp">true</span>
+
+  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:3001/assets&quot;</span>
+</code></pre>
+</div>
+
+
+<p>You&#8217;re welcome.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -956,6 +1012,10 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/">Cucumber, Capybara, and Rails Asset Pipeline in debug mode</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/01/04/new-years-resolution-one/">New Years Resolution #1</a>
