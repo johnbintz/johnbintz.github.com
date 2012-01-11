@@ -8,14 +8,8 @@ Because who wants to recompile all their assets on each run?
 {% highlight ruby %}
 Capybara.server_port = 3001
 Capybara.app_host = "http://localhost:3001"
-{% endhighlight %}
 
-## config/environments/cucumber.rb
-{% highlight ruby %}
-  config.assets.enabled = true
-  config.assets.debug = true
-
-  config.assets.prefix = "http://localhost:3001/assets"
+ActionController::Base.asset_host = Capybara.app_host
 {% endhighlight %}
 
 You're welcome.
