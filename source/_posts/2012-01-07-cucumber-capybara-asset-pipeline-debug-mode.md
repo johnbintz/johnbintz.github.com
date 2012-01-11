@@ -12,4 +12,10 @@ Capybara.app_host = "http://localhost:3001"
 ActionController::Base.asset_host = Capybara.app_host
 {% endhighlight %}
 
+## config/environments/cucumber.rb
+{% highlight ruby %}
+config.assets.enabled = true
+config.assets.debug = true
+{% endhighlight %}
+
 You're welcome.
