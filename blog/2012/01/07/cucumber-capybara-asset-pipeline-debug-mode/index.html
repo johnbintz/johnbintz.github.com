@@ -95,16 +95,8 @@ Capybara.app_host = &quot;http:// &hellip;">
 
 <div class="highlight"><pre><code class="ruby"><span class="no">Capybara</span><span class="o">.</span><span class="n">server_port</span> <span class="o">=</span> <span class="mi">3001</span>
 <span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:3001&quot;</span>
-</code></pre>
-</div>
 
-
-<h2>config/environments/cucumber.rb</h2>
-
-<div class="highlight"><pre><code class="ruby">  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kp">true</span>
-  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kp">true</span>
-
-  <span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:3001/assets&quot;</span>
+<span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">asset_host</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span>
 </code></pre>
 </div>
 
