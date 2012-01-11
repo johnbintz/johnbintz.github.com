@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-01-11T17:36:23-05:00</updated>
+  <updated>2012-01-11T17:46:33-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -26,6 +26,14 @@
 <span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:3001&quot;</span>
 
 <span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">asset_host</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span>
+</code></pre>
+</div>
+
+
+<h2>config/environments/cucumber.rb</h2>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kp">true</span>
+<span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kp">true</span>
 </code></pre>
 </div>
 
