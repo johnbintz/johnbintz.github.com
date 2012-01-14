@@ -9,8 +9,7 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Because who wants to recompile all their assets on each run? features/support/env.rb Capybara.server_port = 3001
-Capybara.app_host = &quot;http:// &hellip;">
+  <meta name="description" content="In jQuery, you normally write code like this to do something after the whole page loads: &lt;script type=&quot;text/javascript&quot;&gt; // the long &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +62,87 @@ Capybara.app_host = &quot;http:// &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/13/javascript-in-my-jquery-document-ready/">JavaScript in My jQuery: $(document).ready()</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-13T00:00:00-05:00" pubdate data-updated="true">Jan 13<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In jQuery, you normally write code like this to do something after the whole page loads:</p>
+
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+  <span class="c1">// the long way...</span>
+  <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#login-box&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">(</span><span class="s1">&#39;slow&#39;</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="c1">// the short way...</span>
+  <span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#login-box&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">(</span><span class="s1">&#39;slow&#39;</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre>
+</div>
+
+
+<p>There&#8217;s two things going on here:</p>
+
+<ul>
+<li>You&#8217;re attaching an <em>event handler</em> to a thing that <em>fires</em> an event. Specifically, the event that fires when
+all the parts of your Web page have finished loading and that the <em>document</em> is <em>ready</em>.</li>
+<li>That event handler:</li>
+</ul>
+
+
+<div class="highlight"><pre><code class="javascript">  <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#login-box&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">(</span><span class="s1">&#39;slow&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+  
+</code></pre>
+</div>
+
+
+<p>  is what&#8217;s known as an <em>anonymous function</em>. Normally functions get names:</p>
+
+<div class="highlight"><pre><code class="javascript">  <span class="kd">function</span> <span class="nx">doSomething</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#login-box&#39;</span><span class="p">).</span><span class="nx">show</span><span class="p">(</span><span class="s1">&#39;slow&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+  
+</code></pre>
+</div>
+
+
+<p>  But, you can also create a function that doesn&#8217;t have a name&#8230;it&#8217;s <em>anonymous</em>. You use these a lot in jQuery.
+  They come in pretty handy and have a lot of interesting properties.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1014,6 +1094,10 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/01/13/javascript-in-my-jquery-document-ready/">JavaScript in my jQuery: $(document).ready()</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/">Cucumber, Capybara, and Rails Asset Pipeline in debug mode</a>
       </li>
     
@@ -1047,10 +1131,6 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     
       <li class="post">
         <a href="/blog/2011/12/05/my-hypercool-automagic-rails-guard-setup/">My Hypercool Automagic Rails 3.1/Guard Setup</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/05/migrating-mail-from-old-citadel-server/">Migrating mail from an older Citadel server to a new one</a>
       </li>
     
   </ul>
