@@ -9,7 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="In jQuery, you normally write code like this to do something after the whole page loads: &lt;script type=&quot;text/javascript&quot;&gt; // the long &hellip;">
+  <meta name="description" content="Sometimes you have to pass in options to jQuery functions like this: $(&#39;div&#39;).animate({ height: &#39;300px&#39;, opacity: 0.75,
+}); This: { &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -62,6 +63,228 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/15/javascript-in-my-jquery-objects-as-data-containers/">JavaScript in My jQuery: Objects as Data Containers</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-15T00:00:00-05:00" pubdate data-updated="true">Jan 15<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sometimes you have to pass in options to jQuery functions like this:</p>
+
+<div class="highlight"><pre><code class="js"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
+  <span class="nx">height</span><span class="o">:</span> <span class="s1">&#39;300px&#39;</span><span class="p">,</span>
+  <span class="nx">opacity</span><span class="o">:</span> <span class="mf">0.75</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+
+<p>This:</p>
+
+<div class="highlight"><pre><code class="js"><span class="p">{</span>
+  <span class="nx">height</span><span class="o">:</span> <span class="s1">&#39;300px&#39;</span><span class="p">,</span>
+  <span class="nx">opacity</span><span class="o">:</span> <span class="mf">0.75</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+
+<p>is the most basic form of an <em>Object</em>. Objects have two things: <em>properties</em>
+and <em>methods</em>. When you attach other things to an object, like the String <code>300px</code>
+or the Number <code>0.75</code>, you&#8217;re creating properties.</p>
+
+<p><em>Methods</em> are Functions attached to an object. When you extend <code>jQuery.fn</code> with your
+own jQuery actions, you&#8217;re creating a new method:</p>
+
+<div class="highlight"><pre><code class="js"><span class="nx">$</span><span class="p">.</span><span class="nx">fn</span><span class="p">.</span><span class="nx">makeAllTranslucent</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
+    <span class="nx">height</span><span class="o">:</span> <span class="s1">&#39;300px&#39;</span><span class="p">,</span>
+    <span class="nx">opacity</span><span class="o">:</span> <span class="mf">0.75</span>
+  <span class="p">});</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// now you have a shortcut!</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">).</span><span class="nx">makeAllTranslucent</span><span class="p">();</span>
+</code></pre>
+</div>
+
+
+<p>You can add and change properties on an object after-the-fact, too:</p>
+
+<div class="highlight"><pre><code class="js"><span class="kd">var</span> <span class="nx">properties</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;300px&quot;</span> <span class="p">};</span>
+<span class="k">if</span> <span class="nx">confirm</span><span class="p">(</span><span class="s2">&quot;Want them translucent?&quot;</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">properties</span><span class="p">.</span><span class="nx">opacity</span> <span class="o">=</span> <span class="mf">0.75</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// pass the object in as the first parameter</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">).</span><span class="nx">animate</span><span class="p">(</span><span class="nx">properties</span><span class="p">);</span>
+</code></pre>
+</div>
+
+
+<p>Because of the way JavaScript is designed, everything is an object: the
+one you created with <code>{curly: 'brackets'}</code>, <code>$.fn</code>, standalone Functions,
+everything. This lets developers do some very clever things with JavaScript.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/14/javascript-in-my-jquery-the-magic-this/">JavaScript in My jQuery: The Magic $(this)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-14T00:00:00-05:00" pubdate data-updated="true">Jan 14<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Say you&#8217;re looping over some elements on the page:</p>
+
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;div&gt;</span>One<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div&gt;</span>Two<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div&gt;</span>Three<span class="nt">&lt;/div&gt;</span>
+
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;unvisited&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre>
+</div>
+
+
+<p>Within the <em>anonymous function</em>:</p>
+
+<div class="highlight"><pre><code class="js"><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;unvisited&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+
+<p><code>this</code> becomes each jQuery object found in <code>$('div')</code> in turn. But how?</p>
+
+<p>That <code>this</code> normally means <em>the object running the current code</em>:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="c1">// create a class constructor</span>
+<span class="kd">function</span> <span class="nx">Cat</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// add a method to the object</span>
+<span class="nx">Cat</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">hiss</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot; is hissing at you!&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// instantiate a Cat</span>
+<span class="kd">var</span> <span class="nx">myCat</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Cat</span><span class="p">(</span><span class="s2">&quot;Fluffy&quot;</span><span class="p">);</span>
+
+<span class="c1">// work with our cat</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myCat</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span> <span class="c1">// =&gt; Fluffy</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myCat</span><span class="p">.</span><span class="nx">hiss</span><span class="p">());</span> <span class="c1">// =&gt; Fluffy is hissing at you!</span>
+</code></pre>
+</div>
+
+
+<p>But JavaScript lets you change <code>this</code> to whatever object you want using <code>Function#apply</code>:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">function</span> <span class="nx">Dog</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">dog</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dog</span><span class="p">(</span><span class="s2">&quot;Bruiser&quot;</span><span class="p">);</span>
+
+<span class="c1">// Cat.prototype.hiss is an object of type Function</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Cat</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">hiss</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">dog</span><span class="p">));</span> <span class="c1">// =&gt; Bruiser is hissing at you!</span>
+</code></pre>
+</div>
+
+
+<p>jQuery does this with the <code>jQuery.fn#each</code> method when looping over things like DOM elements. <code>this</code>
+becomes a jQuery object for each DOM node in turn:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// the first run through, `this` is $(&#39;div:eq(0)&#39;)</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div:eq(0)&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">));</span> <span class="c1">// =&gt; &#39;&#39;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div:eq(1)&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">));</span> <span class="c1">// =&gt; &#39;&#39;</span>
+
+  <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;uninvited&#39;</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div:eq(0)&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">));</span> <span class="c1">// =&gt; &#39;uninvited&#39;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;div:eq(1)&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">));</span> <span class="c1">// =&gt; &#39;&#39;</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+
+<p>For polyglots: This is very similar in concept to how <code>instance_eval</code> can be used in Ruby:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">code</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="nb">puts</span> <span class="vi">@name</span> <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Dog</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span> <span class="p">;</span> <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span> <span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">my_dog</span> <span class="o">=</span> <span class="no">Dog</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Bruiser&quot;</span><span class="p">)</span>
+
+<span class="n">my_dog</span><span class="o">.</span><span class="n">instance_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">code</span><span class="p">)</span> <span class="c1">#=&gt; &quot;Bruiser&quot;</span>
+</code></pre>
+</div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1094,6 +1317,14 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/01/15/javascript-in-my-jquery-objects-as-data-containers/">JavaScript in my jQuery: Objects as data containers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/14/javascript-in-my-jquery-the-magic-this/">JavaScript in my jQuery: the magic $(this)</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/13/javascript-in-my-jquery-document-ready/">JavaScript in my jQuery: $(document).ready()</a>
       </li>
     
@@ -1123,14 +1354,6 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     
       <li class="post">
         <a href="/blog/2011/12/12/jhw-presentation/">Jasmine Headless WebKit Presentation</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/05/regeneration-self-signed-citadel-certificates/">Regenerating Self-Signed Citadel Certificates</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/05/my-hypercool-automagic-rails-guard-setup/">My Hypercool Automagic Rails 3.1/Guard Setup</a>
       </li>
     
   </ul>
