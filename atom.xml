@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-01-18T09:11:17-05:00</updated>
+  <updated>2012-01-31T16:26:51-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,30 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[falcon patch adventures for ruby 1.9.3]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/01/31/falcon-patch-adventures-for-ruby-1.9.3/"/>
+    <updated>2012-01-31T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/01/31/falcon-patch-adventures-for-ruby-1.9.3</id>
+    <content type="html"><![CDATA[<p>OK, I got the super-cool <a href="https://gist.github.com/1688857">falcon patch</a> (as it&#8217;s known in rvm) working on my Snow Leopard Macs, but had a few
+issues with it, and not because of the patch itself:</p>
+
+<ul>
+<li>For some reason, building any 1.9.3 in rvm on my machines screws up the Makefile and sticks in a circular reference to
+building the ruby executable (as in, dependency ruby => ruby). Have to always rip out that last line in the Makefile
+and <code>make ; make install</code>.</li>
+<li>As rvm so succinctly warned me (I had no idea <code>rvm requirements</code> existed!), GCC &amp; associated bits in the default Snow
+Leopard XCode release are broken. I was getting segfaults on garbage collection within the cached load path part of
+the patch, which is where the real speed came from. I installed <a href="https://github.com/kennethreitz/osx-gcc-installer">osx-gcc-installer</a>
+and removed the rest of XCode, then recompiled and everything worked fine.</li>
+</ul>
+
+
+<p>How much of an improvement for me? 3 RSpec runs of a big app went from 2:40.742s (1.9.2-p290 with load patch) to 1:48.104s (1.9.3-p0 with falcon patch).
+A 33% speed increase. Sweet.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Under SOPA, this site is now liable for damages]]></title>

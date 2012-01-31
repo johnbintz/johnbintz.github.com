@@ -9,8 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="YouTube
-">
+  <meta name="description" content="OK, I got the super-cool falcon patch (as it&#8217;s known in rvm) working on my Snow Leopard Macs, but had a few
+issues with it, and not because of &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +63,57 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/31/falcon-patch-adventures-for-ruby-1.9.3/">Falcon Patch Adventures for Ruby 1.9.3</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-31T00:00:00-05:00" pubdate data-updated="true">Jan 31<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>OK, I got the super-cool <a href="https://gist.github.com/1688857">falcon patch</a> (as it&#8217;s known in rvm) working on my Snow Leopard Macs, but had a few
+issues with it, and not because of the patch itself:</p>
+
+<ul>
+<li>For some reason, building any 1.9.3 in rvm on my machines screws up the Makefile and sticks in a circular reference to
+building the ruby executable (as in, dependency ruby => ruby). Have to always rip out that last line in the Makefile
+and <code>make ; make install</code>.</li>
+<li>As rvm so succinctly warned me (I had no idea <code>rvm requirements</code> existed!), GCC &amp; associated bits in the default Snow
+Leopard XCode release are broken. I was getting segfaults on garbage collection within the cached load path part of
+the patch, which is where the real speed came from. I installed <a href="https://github.com/kennethreitz/osx-gcc-installer">osx-gcc-installer</a>
+and removed the rest of XCode, then recompiled and everything worked fine.</li>
+</ul>
+
+
+<p>How much of an improvement for me? 3 RSpec runs of a big app went from 2:40.742s (1.9.2-p290 with load patch) to 1:48.104s (1.9.3-p0 with falcon patch).
+A 33% speed increase. Sweet.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1353,6 +1404,10 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/01/31/falcon-patch-adventures-for-ruby-1.9.3/">falcon patch adventures for ruby 1.9.3</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/18/under-sopa-this-site-is-now-liable/">Under SOPA, this site is now liable for damages</a>
       </li>
     
@@ -1386,10 +1441,6 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     
       <li class="post">
         <a href="/blog/2011/12/20/christmas-party-drawings/">Christmas Party Drawings</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/14/net-imap-ssl-verify-mode/">Net::IMAP SSL Verify Mode</a>
       </li>
     
   </ul>
