@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-01-31T16:26:51-05:00</updated>
+  <updated>2012-02-06T11:35:54-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,78 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Dependent APIs and expires_in in Cucumber]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/02/06/expires_in-and-dependent-apis-in-cucumber/"/>
+    <updated>2012-02-06T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/02/06/expires_in-and-dependent-apis-in-cucumber</id>
+    <content type="html"><![CDATA[<p>The setup:</p>
+
+<ul>
+<li>Cucumber</li>
+<li>Capybara</li>
+<li><code>capybara-webkit</code></li>
+<li>A running Rails API (started up using <a href="http://github.com/johnbintz/vegetable_glue/">vegetable_glue</a>)</li>
+<li>Active Resource for moving objects around</li>
+</ul>
+
+
+<p>The problem:</p>
+
+<p>A particular dependent API request wasn&#8217;t making it back to the app under test nor the browser. The
+request was actually being proxied through the app, pretty much raw from the API and not re-run
+through Active Resource before being sent to the browser.</p>
+
+<p>The issue:</p>
+
+<p>An <code>expires_in</code> in the controller method was sending along cache information, causing the stale data to
+be cached <em>somewhere</em>.</p>
+
+<p>The solution:</p>
+
+<p>In <code>config/environments/cucumber.rb</code> on the API:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">module</span> <span class="nn">ActionController::ConditionalGet</span>
+  <span class="k">def</span> <span class="nf">expires_in</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">;</span> <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>Punch them ducks!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[The cleanest Bundler env]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/02/02/the-cleanest-bundler-env/"/>
+    <updated>2012-02-02T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/02/02/the-cleanest-bundler-env</id>
+    <content type="html"><![CDATA[<p>Running commands in a Bundler-enabled app that has a Git repo attached to it makes running Bundler in subshells a pain.
+<code>Bundler.with_clean_env</code> gets close, but still leaves enough of Bundler around to be unpleasant. This kills it dead
+in subshells:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">module</span> <span class="nn">Bundler</span>
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+    <span class="k">def</span> <span class="nf">with_sparkling_clean_env</span>
+      <span class="n">oenv</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">.</span><span class="n">to_hash</span>
+
+      <span class="sx">%w{BUNDLE_GEMFILE RUBYOPT GEM_HOME GIT_DIR GIT_WORK_TREE}</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">key</span><span class="o">|</span> <span class="no">ENV</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="p">}</span>
+
+      <span class="k">yield</span>
+
+      <span class="no">ENV</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">oenv</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[falcon patch adventures for ruby 1.9.3]]></title>
