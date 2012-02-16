@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Cucumber, Capybara, and Rails Asset Pipeline in debug mode - My webzone</title>
+  <title>RVM, the JSON gem, the @global gemset, and rb_gc bugs - My webzone</title>
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Because who wants to recompile all their assets on each run? features/support/env.rb Capybara.server_port = 3001
-Capybara.app_host = &quot;http:// &hellip;">
+  <meta name="description" content="Upon building Ruby 1.9.3-p125 on my Snow Leopard Mac and getting ready to take it for a spin, trying to run anything of note in a Rails app brought &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ Capybara.app_host = &quot;http:// &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode">
+  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -66,7 +65,7 @@ Capybara.app_host = &quot;http:// &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Cucumber, Capybara, and Rails Asset Pipeline in Debug Mode</h1>
+      <h1 class="entry-title">RVM, the JSON Gem, the @global Gemset, and Rb_gc Bugs</h1>
     
     
       <p class="meta">
@@ -82,34 +81,25 @@ Capybara.app_host = &quot;http:// &hellip;">
   
 
 
-<time datetime="2012-01-07T00:00:00-05:00" pubdate data-updated="true">Jan 7<span>th</span>, 2012</time>
+<time datetime="2012-02-16T00:00:00-05:00" pubdate data-updated="true">Feb 16<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Because who wants to recompile all their assets on each run?</p>
+<div class="entry-content"><p>Upon building Ruby 1.9.3-p125 on my Snow Leopard Mac and getting ready to take it for a spin, trying to run anything of note in a Rails app brought the following cryptic error:</p>
 
-<h2>features/support/env.rb</h2>
+<pre><code>[BUG] cross-thread violation on rb_gc()
+(null)
 
-<div class="highlight"><pre><code class="ruby"><span class="no">Capybara</span><span class="o">.</span><span class="n">server_port</span> <span class="o">=</span> <span class="mi">3001</span>
-<span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:3001&quot;</span>
-
-<span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">asset_host</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span>
+Abort trap
 </code></pre>
-</div>
 
-
-<h2>config/environments/cucumber.rb</h2>
-
-<div class="highlight"><pre><code class="ruby"><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kp">true</span>
-<span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kp">true</span>
-</code></pre>
-</div>
-
-
-<p>You&#8217;re welcome.</p>
+<p>Digging into Console.app, the backtrace indicated that the system <code>libruby.1.dylib</code> was being accessed from the C parser in the <code>json</code> gem living in the <code>@global</code>
+RVM gemset. <code>otool -L</code> confirmed that the parser in the <code>@global</code> gemset was linked against system ruby, not RVM ruby. Installing a new <code>json</code> gem into the current gemset didn&#8217;t work, as RVM prefers to use the <code>@global</code> version of the gem over the one in the current gemset,
+it seems. Deleting the gems from the <code>@global</code> gemset and reinstalling the <code>json</code> gem in the current gemset worked, and I&#8217;m sure I could have reinstalled the
+<code>json</code> gem globally too.</p>
 </div>
 
 
@@ -132,7 +122,7 @@ Capybara.app_host = &quot;http:// &hellip;">
   
 
 
-<time datetime="2012-01-07T00:00:00-05:00" pubdate data-updated="true">Jan 7<span>th</span>, 2012</time>
+<time datetime="2012-02-16T00:00:00-05:00" pubdate data-updated="true">Feb 16<span>th</span>, 2012</time>
       
 
 
@@ -140,7 +130,7 @@ Capybara.app_host = &quot;http:// &hellip;">
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -151,10 +141,8 @@ Capybara.app_host = &quot;http:// &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/01/04/new-years-resolution-one/" title="Previous Post: New Years Resolution #1">&laquo; New Years Resolution #1</a>
+        <a class="basic-alignment left" href="/blog/2012/02/06/expires_in-and-dependent-apis-in-cucumber/" title="Previous Post: Dependent APIs and expires_in in Cucumber">&laquo; Dependent APIs and expires_in in Cucumber</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/01/13/javascript-in-my-jquery-document-ready/" title="next Post: JavaScript in my jQuery: $(document).ready()">JavaScript in my jQuery: $(document).ready() &raquo;</a>
       
     </p>
   </footer>

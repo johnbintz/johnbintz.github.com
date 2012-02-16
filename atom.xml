@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-02-06T11:35:54-05:00</updated>
+  <updated>2012-02-16T16:47:43-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,26 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RVM, the JSON gem, the @global gemset, and rb_gc bugs]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem/"/>
+    <updated>2012-02-16T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem</id>
+    <content type="html"><![CDATA[<p>Upon building Ruby 1.9.3-p125 on my Snow Leopard Mac and getting ready to take it for a spin, trying to run anything of note in a Rails app brought the following cryptic error:</p>
+
+<pre><code>[BUG] cross-thread violation on rb_gc()
+(null)
+
+Abort trap
+</code></pre>
+
+<p>Digging into Console.app, the backtrace indicated that the system <code>libruby.1.dylib</code> was being accessed from the C parser in the <code>json</code> gem living in the <code>@global</code>
+RVM gemset. <code>otool -L</code> confirmed that the parser in the <code>@global</code> gemset was linked against system ruby, not RVM ruby. Installing a new <code>json</code> gem into the current gemset didn&#8217;t work, as RVM prefers to use the <code>@global</code> version of the gem over the one in the current gemset,
+it seems. Deleting the gems from the <code>@global</code> gemset and reinstalling the <code>json</code> gem in the current gemset worked, and I&#8217;m sure I could have reinstalled the
+<code>json</code> gem globally too.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Dependent APIs and expires_in in Cucumber]]></title>
