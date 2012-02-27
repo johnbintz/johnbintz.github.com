@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-02-16T16:47:43-05:00</updated>
+  <updated>2012-02-27T10:25:09-05:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,17 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Dawn Dancing]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/02/27/dawn-dancing/"/>
+    <updated>2012-02-27T00:00:00-05:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/02/27/dawn-dancing</id>
+    <content type="html"><![CDATA[<p><img src="http://johnbintz.github.com/assets/sketchbook-comics/dawn-dancing.jpg"><br /></p>
+
+<p>Done in Sketchbook on Android.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RVM, the JSON gem, the @global gemset, and rb_gc bugs]]></title>
