@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>RVM, the JSON gem, the @global gemset, and rb_gc bugs - My webzone</title>
+  <title>That sense of tmux cameraderie - My webzone</title>
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Upon building Ruby 1.9.3-p125 on my Snow Leopard Mac and getting ready to take it for a spin, trying to run anything of note in a Rails app brought &hellip;">
+  <meta name="description" content="I&#8217;ve switched to tmux and wanted to simplify my life as best as I can when using it, so I tried a few tmux gems to manage configs
+and decided &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem">
+  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/03/06/that-sense-of-tmux-cameraderie">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -65,7 +66,7 @@
   
   <header>
     
-      <h1 class="entry-title">RVM, the JSON Gem, the @global Gemset, and Rb_gc Bugs</h1>
+      <h1 class="entry-title">That Sense of Tmux Cameraderie</h1>
     
     
       <p class="meta">
@@ -81,25 +82,62 @@
   
 
 
-<time datetime="2012-02-16T00:00:00-05:00" pubdate data-updated="true">Feb 16<span>th</span>, 2012</time>
+<time datetime="2012-03-06T00:00:00-05:00" pubdate data-updated="true">Mar 6<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Upon building Ruby 1.9.3-p125 on my Snow Leopard Mac and getting ready to take it for a spin, trying to run anything of note in a Rails app brought the following cryptic error:</p>
+<div class="entry-content"><p>I&#8217;ve switched to <a href="http://tmux.sf.net/"><code>tmux</code></a> and wanted to simplify my life as best as I can when using it, so I tried a few tmux gems to manage configs
+and decided on <a href="http://github.com/remiprev/teamocil"><code>teamocil</code></a>. However, like anything involving
+a terminal multiplexer, it needs massaging <em>(Teamocil may cause numbness of the extremities.)</em>:</p>
 
-<pre><code>[BUG] cross-thread violation on rb_gc()
-(null)
+<div class="highlight"><pre><code class="bash"><span class="c"># ~/.bash_profile</span>
 
-Abort trap
+tmc<span class="o">()</span> <span class="o">{</span>
+  tmux has -t <span class="nv">$1</span> <span class="o">&amp;&amp;</span> tmux attach -t <span class="nv">$1</span> <span class="o">||</span> tmux new -s <span class="nv">$1</span> <span class="s2">&quot;teamocil $1&quot;</span>
+<span class="o">}</span>
+
+<span class="k">function </span>_tmc<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">local </span><span class="nv">IFS</span><span class="o">=</span><span class="s1">$&#39;\n&#39;</span>
+  <span class="nb">local </span><span class="nv">cur</span><span class="o">=</span><span class="s2">&quot;$2&quot;</span>
+  <span class="nv">COMPREPLY</span><span class="o">=(</span><span class="k">$(</span><span class="nb">compgen</span> -W <span class="s2">&quot;$(find ~/.teamocil -type f | sed &#39;s#^.*/\(.*\)\.yml$#\1#&#39; )&quot;</span> -- <span class="s2">&quot;${cur}&quot;</span><span class="k">)</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="nb">complete</span> -F _tmc tmc
 </code></pre>
+</div>
 
-<p>Digging into Console.app, the backtrace indicated that the system <code>libruby.1.dylib</code> was being accessed from the C parser in the <code>json</code> gem living in the <code>@global</code>
-RVM gemset. <code>otool -L</code> confirmed that the parser in the <code>@global</code> gemset was linked against system ruby, not RVM ruby. Installing a new <code>json</code> gem into the current gemset didn&#8217;t work, as RVM prefers to use the <code>@global</code> version of the gem over the one in the current gemset,
-it seems. Deleting the gems from the <code>@global</code> gemset and reinstalling the <code>json</code> gem in the current gemset worked, and I&#8217;m sure I could have reinstalled the
-<code>json</code> gem globally too.</p>
+
+
+
+<div class="highlight"><pre><code class="ini"><span class="c"># ~/.tmux.conf</span>
+
+<span class="err">set</span> <span class="err">-g</span> <span class="err">base-index</span> <span class="err">0</span>
+</code></pre>
+</div>
+
+
+<p>Then, don&#8217;t use the <code>session</code> key in your configs:</p>
+
+<div class="highlight"><pre><code class="yaml"><span class="c1"># ~/.teamocil/johnbintz-gh.yml</span>
+
+<span class="l-Scalar-Plain">windows</span><span class="p-Indicator">:</span>
+  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">vim</span>
+    <span class="l-Scalar-Plain">root</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">~/Projects/johnbintz-gh</span>
+    <span class="l-Scalar-Plain">splits</span><span class="p-Indicator">:</span>
+      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">cmd</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">vim</span>
+        <span class="l-Scalar-Plain">height</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">90</span>
+      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">cmd</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">be rake preview</span>
+        <span class="l-Scalar-Plain">height</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">10</span>
+</code></pre>
+</div>
+
+
+<p>And finally, <code>tmc johnbintz-gh</code> will start or rejoin an exisiting Teamocil-configured session.</p>
+
+<p>I could&#8217;ve sworn my terminal management just got easier. Or not. I think hallucination is one of the side effects of Teamocil. <em>(It isn&#8217;t.)</em></p>
 </div>
 
 
@@ -122,7 +160,7 @@ it seems. Deleting the gems from the <code>@global</code> gemset and reinstallin
   
 
 
-<time datetime="2012-02-16T00:00:00-05:00" pubdate data-updated="true">Feb 16<span>th</span>, 2012</time>
+<time datetime="2012-03-06T00:00:00-05:00" pubdate data-updated="true">Mar 6<span>th</span>, 2012</time>
       
 
 
@@ -130,7 +168,7 @@ it seems. Deleting the gems from the <code>@global</code> gemset and reinstallin
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/03/06/that-sense-of-tmux-cameraderie/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/03/06/that-sense-of-tmux-cameraderie/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -141,10 +179,8 @@ it seems. Deleting the gems from the <code>@global</code> gemset and reinstallin
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/02/06/expires_in-and-dependent-apis-in-cucumber/" title="Previous Post: Dependent APIs and expires_in in Cucumber">&laquo; Dependent APIs and expires_in in Cucumber</a>
+        <a class="basic-alignment left" href="/blog/2012/03/05/closing-given-body-in-rack-middleware/" title="Previous Post: Closing the given body in Rack middleware">&laquo; Closing the given body in Rack middleware</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/02/27/dawn-dancing/" title="next Post: Dawn Dancing">Dawn Dancing &raquo;</a>
       
     </p>
   </footer>

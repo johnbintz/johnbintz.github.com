@@ -9,8 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Here&#8217;s one that was biting my bum: rack-livereload started generating a bunch
-of thread deadlock errors left and right for users. One commenter &hellip;">
+  <meta name="description" content="I&#8217;ve switched to tmux and wanted to simplify my life as best as I can when using it, so I tried a few tmux gems to manage configs
+and decided &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +63,90 @@ of thread deadlock errors left and right for users. One commenter &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/06/that-sense-of-tmux-cameraderie/">That Sense of Tmux Cameraderie</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-06T00:00:00-05:00" pubdate data-updated="true">Mar 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;ve switched to <a href="http://tmux.sf.net/"><code>tmux</code></a> and wanted to simplify my life as best as I can when using it, so I tried a few tmux gems to manage configs
+and decided on <a href="http://github.com/remiprev/teamocil"><code>teamocil</code></a>. However, like anything involving
+a terminal multiplexer, it needs massaging <em>(Teamocil may cause numbness of the extremities.)</em>:</p>
+
+<div class="highlight"><pre><code class="bash"><span class="c"># ~/.bash_profile</span>
+
+tmc<span class="o">()</span> <span class="o">{</span>
+  tmux has -t <span class="nv">$1</span> <span class="o">&amp;&amp;</span> tmux attach -t <span class="nv">$1</span> <span class="o">||</span> tmux new -s <span class="nv">$1</span> <span class="s2">&quot;teamocil $1&quot;</span>
+<span class="o">}</span>
+
+<span class="k">function </span>_tmc<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">local </span><span class="nv">IFS</span><span class="o">=</span><span class="s1">$&#39;\n&#39;</span>
+  <span class="nb">local </span><span class="nv">cur</span><span class="o">=</span><span class="s2">&quot;$2&quot;</span>
+  <span class="nv">COMPREPLY</span><span class="o">=(</span><span class="k">$(</span><span class="nb">compgen</span> -W <span class="s2">&quot;$(find ~/.teamocil -type f | sed &#39;s#^.*/\(.*\)\.yml$#\1#&#39; )&quot;</span> -- <span class="s2">&quot;${cur}&quot;</span><span class="k">)</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="nb">complete</span> -F _tmc tmc
+</code></pre>
+</div>
+
+
+
+
+<div class="highlight"><pre><code class="ini"><span class="c"># ~/.tmux.conf</span>
+
+<span class="err">set</span> <span class="err">-g</span> <span class="err">base-index</span> <span class="err">0</span>
+</code></pre>
+</div>
+
+
+<p>Then, don&#8217;t use the <code>session</code> key in your configs:</p>
+
+<div class="highlight"><pre><code class="yaml"><span class="c1"># ~/.teamocil/johnbintz-gh.yml</span>
+
+<span class="l-Scalar-Plain">windows</span><span class="p-Indicator">:</span>
+  <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">vim</span>
+    <span class="l-Scalar-Plain">root</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">~/Projects/johnbintz-gh</span>
+    <span class="l-Scalar-Plain">splits</span><span class="p-Indicator">:</span>
+      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">cmd</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">vim</span>
+        <span class="l-Scalar-Plain">height</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">90</span>
+      <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">cmd</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">be rake preview</span>
+        <span class="l-Scalar-Plain">height</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">10</span>
+</code></pre>
+</div>
+
+
+<p>And finally, <code>tmc johnbintz-gh</code> will start or rejoin an exisiting Teamocil-configured session.</p>
+
+<p>I could&#8217;ve sworn my terminal management just got easier. Or not. I think hallucination is one of the side effects of Teamocil. <em>(It isn&#8217;t.)</em></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1623,54 +1707,9 @@ The stuff you care about compressing is already compressed from the operation ab
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/05/migrating-mail-from-old-citadel-server/">Migrating Mail From an Older Citadel Server to a New One</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-05T00:00:00-05:00" pubdate data-updated="true">Dec 5<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I have an old Citadel server that I want to move mail from, the destination being a new Citadel server. The old server is older than the new
-over-the-wire or XML support, so I&#8217;m doing it the hard way and copying messages from one to another over the network. I found
-<a href="http://www.athensfbc.com/imap_tools/">imapcopy.pl</a> which is getting the job done nicely. Everything else will have to come over manually,
-which will actualy be faster thatn trying to upgrade anything. :/</p>
-
-<p>A few observations:</p>
-
-<ul>
-<li>Clean out big mailboxes. My Sent Items folder had a ton of cruft that could be removed, and it made the process go a lot faster <em>(no wai)</em>.</li>
-<li>Turn on IMAP protocol watching, otherwise you won&#8217;t know if something&#8217;s actually broke or not.</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -1681,6 +1720,10 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/03/06/that-sense-of-tmux-cameraderie/">That sense of tmux cameraderie</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/03/05/closing-given-body-in-rack-middleware/">Closing the given body in Rack middleware</a>
@@ -1716,10 +1759,6 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     
       <li class="post">
         <a href="/blog/2012/01/14/javascript-in-my-jquery-the-magic-this/">JavaScript in my jQuery: the magic $(this)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/13/javascript-in-my-jquery-document-ready/">JavaScript in my jQuery: $(document).ready()</a>
       </li>
     
   </ul>

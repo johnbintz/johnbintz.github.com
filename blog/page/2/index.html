@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>RVM, the JSON gem, the @global gemset, and rb_gc bugs - My webzone</title>
+  <title>My webzone</title>
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Upon building Ruby 1.9.3-p125 on my Snow Leopard Mac and getting ready to take it for a spin, trying to run anything of note in a Rails app brought &hellip;">
+  <meta name="description" content="I have an old Citadel server that I want to move mail from, the destination being a new Citadel server. The old server is older than the new
+over-the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem">
+  <link rel="canonical" href="http://johnbintz.github.com/blog/page/2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -60,12 +61,15 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title">RVM, the JSON Gem, the @global Gemset, and Rb_gc Bugs</h1>
+      <h1 class="entry-title"><a href="/blog/2011/12/05/migrating-mail-from-old-citadel-server/">Migrating Mail From an Older Citadel Server to a New One</a></h1>
     
     
       <p class="meta">
@@ -81,77 +85,40 @@
   
 
 
-<time datetime="2012-02-16T00:00:00-05:00" pubdate data-updated="true">Feb 16<span>th</span>, 2012</time>
+<time datetime="2011-12-05T00:00:00-05:00" pubdate data-updated="true">Dec 5<span>th</span>, 2011</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Upon building Ruby 1.9.3-p125 on my Snow Leopard Mac and getting ready to take it for a spin, trying to run anything of note in a Rails app brought the following cryptic error:</p>
+  <div class="entry-content"><p>I have an old Citadel server that I want to move mail from, the destination being a new Citadel server. The old server is older than the new
+over-the-wire or XML support, so I&#8217;m doing it the hard way and copying messages from one to another over the network. I found
+<a href="http://www.athensfbc.com/imap_tools/">imapcopy.pl</a> which is getting the job done nicely. Everything else will have to come over manually,
+which will actualy be faster thatn trying to upgrade anything. :/</p>
 
-<pre><code>[BUG] cross-thread violation on rb_gc()
-(null)
+<p>A few observations:</p>
 
-Abort trap
-</code></pre>
+<ul>
+<li>Clean out big mailboxes. My Sent Items folder had a ton of cruft that could be removed, and it made the process go a lot faster <em>(no wai)</em>.</li>
+<li>Turn on IMAP protocol watching, otherwise you won&#8217;t know if something&#8217;s actually broke or not.</li>
+</ul>
 
-<p>Digging into Console.app, the backtrace indicated that the system <code>libruby.1.dylib</code> was being accessed from the C parser in the <code>json</code> gem living in the <code>@global</code>
-RVM gemset. <code>otool -L</code> confirmed that the parser in the <code>@global</code> gemset was linked against system ruby, not RVM ruby. Installing a new <code>json</code> gem into the current gemset didn&#8217;t work, as RVM prefers to use the <code>@global</code> version of the gem over the one in the current gemset,
-it seems. Deleting the gems from the <code>@global</code> gemset and reinstalling the <code>json</code> gem in the current gemset worked, and I&#8217;m sure I could have reinstalled the
-<code>json</code> gem globally too.</p>
 </div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">John Bintz</span></span>
-
-      
-
-
-
-
-
-
-
-
   
 
 
-<time datetime="2012-02-16T00:00:00-05:00" pubdate data-updated="true">Feb 16<span>th</span>, 2012</time>
-      
-
-
-    </p>
+    </article>
+  
+  <div class="pagination">
     
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/02/16/rvm-default-gemset-json-gem/" >Tweet</a>
-  
-  
-  <div class="g-plusone" data-size="medium"></div>
-  
-  
-</div>
-
+    <a href="/blog/archives">Blog Archives</a>
     
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2012/02/06/expires_in-and-dependent-apis-in-cucumber/" title="Previous Post: Dependent APIs and expires_in in Cucumber">&laquo; Dependent APIs and expires_in in Cucumber</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2012/02/27/dawn-dancing/" title="next Post: Dawn Dancing">Dawn Dancing &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
 </div>
-
 <aside class="sidebar">
   
     <section>
@@ -204,7 +171,7 @@ it seems. Deleting the gems from the <code>@global</code> gemset and reinstallin
 <section>
   <h1>Github Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
+    <li class="loading">Status updating&#8230;</li>
   </ul>
   
   <a href="https://github.com/johnbintz">@johnbintz</a> on Github
@@ -234,7 +201,7 @@ it seems. Deleting the gems from the <code>@global</code> gemset and reinstallin
 <section>
   <h1>Latest Tweets</h1>
   <ul id="tweets">
-    <li class="loading">Status updating...</li>
+    <li class="loading">Status updating&#8230;</li>
   </ul>
   <script type="text/javascript">
     $.domReady(function(){
@@ -260,7 +227,6 @@ it seems. Deleting the gems from the <code>@global</code> gemset and reinstallin
 
   
 </aside>
-
 
     </div>
   </div>
