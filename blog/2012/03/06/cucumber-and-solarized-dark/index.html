@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Cucumber, Capybara, and Rails Asset Pipeline in debug mode - My webzone</title>
+  <title>Cucumber and Solarized Dark - My webzone</title>
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Because who wants to recompile all their assets on each run? features/support/env.rb Capybara.server_port = 3001
-Capybara.app_host = &quot;http:// &hellip;">
+  <meta name="description" content="Solarized Dark for iTerm2 is weird in that the grey used by Cucumber to show where
+a snippet comes from is nearly invisible. You can either increase &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ Capybara.app_host = &quot;http:// &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode">
+  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/03/06/cucumber-and-solarized-dark">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -78,7 +78,7 @@ Capybara.app_host = &quot;http:// &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Cucumber, Capybara, and Rails Asset Pipeline in Debug Mode</h1>
+      <h1 class="entry-title">Cucumber and Solarized Dark</h1>
     
     
       <p class="meta">
@@ -94,34 +94,19 @@ Capybara.app_host = &quot;http:// &hellip;">
   
 
 
-<time datetime="2012-01-07T00:00:00-05:00" pubdate data-updated="true">Jan 7<span>th</span>, 2012</time>
+<time datetime="2012-03-06T00:00:00-05:00" pubdate data-updated="true">Mar 6<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Because who wants to recompile all their assets on each run?</p>
+<div class="entry-content"><p><a href="http://github.com/altercation/solarized/tree/master/iterm2-colors-solarized">Solarized Dark</a> for iTerm2 is weird in that the grey used by Cucumber to show where
+a snippet comes from is nearly invisible. You can either increase the contrast (I set it to about 20%), or export a <code>CUCUMBER_COLORS</code> environment variable so
+you don&#8217;t have to worry about it:</p>
 
-<h2>features/support/env.rb</h2>
-
-<div class="highlight"><pre><code class="ruby"><span class="no">Capybara</span><span class="o">.</span><span class="n">server_port</span> <span class="o">=</span> <span class="mi">3001</span>
-<span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:3001&quot;</span>
-
-<span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">asset_host</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">.</span><span class="n">app_host</span>
+<pre><code>export CUCUMBER_COLORS=comment=cyan
 </code></pre>
-</div>
-
-
-<h2>config/environments/cucumber.rb</h2>
-
-<div class="highlight"><pre><code class="ruby"><span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kp">true</span>
-<span class="n">config</span><span class="o">.</span><span class="n">assets</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kp">true</span>
-</code></pre>
-</div>
-
-
-<p>You&#8217;re welcome.</p>
 </div>
 
 
@@ -144,7 +129,7 @@ Capybara.app_host = &quot;http:// &hellip;">
   
 
 
-<time datetime="2012-01-07T00:00:00-05:00" pubdate data-updated="true">Jan 7<span>th</span>, 2012</time>
+<time datetime="2012-03-06T00:00:00-05:00" pubdate data-updated="true">Mar 6<span>th</span>, 2012</time>
       
 
 
@@ -152,7 +137,7 @@ Capybara.app_host = &quot;http:// &hellip;">
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/03/06/cucumber-and-solarized-dark/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/03/06/cucumber-and-solarized-dark/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -163,10 +148,10 @@ Capybara.app_host = &quot;http:// &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/01/04/new-years-resolution-one/" title="Previous Post: New Years Resolution #1">&laquo; New Years Resolution #1</a>
+        <a class="basic-alignment left" href="/blog/2012/03/05/closing-given-body-in-rack-middleware/" title="Previous Post: Closing the given body in Rack middleware">&laquo; Closing the given body in Rack middleware</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/01/13/javascript-in-my-jquery-document-ready/" title="next Post: JavaScript in my jQuery: $(document).ready()">JavaScript in my jQuery: $(document).ready() &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2012/03/06/that-sense-of-tmux-cameraderie/" title="next Post: That sense of tmux cameraderie">That sense of tmux cameraderie &raquo;</a>
       
     </p>
   </footer>
