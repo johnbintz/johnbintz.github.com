@@ -9,8 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content=" Done in Sketchbook on Android.
-">
+  <meta name="description" content="Here&#8217;s one that was biting my bum: rack-livereload started generating a bunch
+of thread deadlock errors left and right for users. One commenter &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +63,74 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/05/closing-given-body-in-rack-middleware/">Closing the Given Body in Rack Middleware</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-05T00:00:00-05:00" pubdate data-updated="true">Mar 5<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here&#8217;s one that was biting my bum: <a href="https://github.com/johnbintz/rack-livereload/"><code>rack-livereload</code></a> started generating a bunch
+of thread deadlock errors left and right for users. One commenter on the bug thread mentioned that middleware need to close the
+body, which I had never heard of before. Turns out it&#8217;s not as well-documented a practice that I would have hoped.</p>
+
+<p>It boils down to trying to close the <code>body</code> that you get after you <code>call</code> your app, in case for some reason it passes you an
+open file handle (which I guess is a thing?)</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">class</span> <span class="nc">MyMiddleware</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="vi">@app</span> <span class="o">=</span> <span class="n">app</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+    <span class="nb">dup</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="c1"># &lt;= the thing I thought would fix the deadlocks</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+    <span class="o">[</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span> <span class="o">]</span> <span class="o">=</span> <span class="vi">@app</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+
+    <span class="n">new_body</span> <span class="o">=</span> <span class="o">[]</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="n">new_body</span> <span class="o">&lt;&lt;</span> <span class="n">line</span> <span class="p">}</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">close</span> <span class="k">if</span> <span class="n">body</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:close</span><span class="p">)</span> <span class="c1"># &lt;= the thing I really had to do</span>
+
+    <span class="c1"># ...process stuff...</span>
+
+    <span class="o">[</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">new_body</span> <span class="o">]</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>So this is mainly so I remember to do this from now on, and for anyone else who runs into thread deadlock issues with Rack middleware.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1615,6 +1683,10 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/03/05/closing-given-body-in-rack-middleware/">Closing the given body in Rack middleware</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/02/27/dawn-dancing/">Dawn Dancing</a>
       </li>
     
@@ -1648,10 +1720,6 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     
       <li class="post">
         <a href="/blog/2012/01/13/javascript-in-my-jquery-document-ready/">JavaScript in my jQuery: $(document).ready()</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/07/cucumber-capybara-asset-pipeline-debug-mode/">Cucumber, Capybara, and Rails Asset Pipeline in debug mode</a>
       </li>
     
   </ul>

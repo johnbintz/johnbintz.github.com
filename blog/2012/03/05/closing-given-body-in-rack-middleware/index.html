@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Dawn Dancing - My webzone</title>
+  <title>Closing the given body in Rack middleware - My webzone</title>
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content=" Done in Sketchbook on Android.
-">
+  <meta name="description" content="Here&#8217;s one that was biting my bum: rack-livereload started generating a bunch
+of thread deadlock errors left and right for users. One commenter &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/02/27/dawn-dancing">
+  <link rel="canonical" href="http://johnbintz.github.com/blog/2012/03/05/closing-given-body-in-rack-middleware">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -66,7 +66,7 @@
   
   <header>
     
-      <h1 class="entry-title">Dawn Dancing</h1>
+      <h1 class="entry-title">Closing the Given Body in Rack Middleware</h1>
     
     
       <p class="meta">
@@ -82,16 +82,46 @@
   
 
 
-<time datetime="2012-02-27T00:00:00-05:00" pubdate data-updated="true">Feb 27<span>th</span>, 2012</time>
+<time datetime="2012-03-05T00:00:00-05:00" pubdate data-updated="true">Mar 5<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p><img src="/assets/sketchbook-comics/dawn-dancing.jpg"><br /></p>
+<div class="entry-content"><p>Here&#8217;s one that was biting my bum: <a href="https://github.com/johnbintz/rack-livereload/"><code>rack-livereload</code></a> started generating a bunch
+of thread deadlock errors left and right for users. One commenter on the bug thread mentioned that middleware need to close the
+body, which I had never heard of before. Turns out it&#8217;s not as well-documented a practice that I would have hoped.</p>
 
-<p>Done in Sketchbook on Android.</p>
+<p>It boils down to trying to close the <code>body</code> that you get after you <code>call</code> your app, in case for some reason it passes you an
+open file handle (which I guess is a thing?)</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">class</span> <span class="nc">MyMiddleware</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="vi">@app</span> <span class="o">=</span> <span class="n">app</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+    <span class="nb">dup</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="c1"># &lt;= the thing I thought would fix the deadlocks</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+    <span class="o">[</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span> <span class="o">]</span> <span class="o">=</span> <span class="vi">@app</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+
+    <span class="n">new_body</span> <span class="o">=</span> <span class="o">[]</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="n">new_body</span> <span class="o">&lt;&lt;</span> <span class="n">line</span> <span class="p">}</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">close</span> <span class="k">if</span> <span class="n">body</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:close</span><span class="p">)</span> <span class="c1"># &lt;= the thing I really had to do</span>
+
+    <span class="c1"># ...process stuff...</span>
+
+    <span class="o">[</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">new_body</span> <span class="o">]</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>So this is mainly so I remember to do this from now on, and for anyone else who runs into thread deadlock issues with Rack middleware.</p>
 </div>
 
 
@@ -114,7 +144,7 @@
   
 
 
-<time datetime="2012-02-27T00:00:00-05:00" pubdate data-updated="true">Feb 27<span>th</span>, 2012</time>
+<time datetime="2012-03-05T00:00:00-05:00" pubdate data-updated="true">Mar 5<span>th</span>, 2012</time>
       
 
 
@@ -122,7 +152,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/02/27/dawn-dancing/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/02/27/dawn-dancing/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://johnbintz.github.com/blog/2012/03/05/closing-given-body-in-rack-middleware/" data-via="johnbintz" data-counturl="http://johnbintz.github.com/blog/2012/03/05/closing-given-body-in-rack-middleware/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -133,10 +163,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/02/16/rvm-default-gemset-json-gem/" title="Previous Post: RVM, the JSON gem, the @global gemset, and rb_gc bugs">&laquo; RVM, the JSON gem, the @global gemset, and rb_gc bugs</a>
+        <a class="basic-alignment left" href="/blog/2012/02/27/dawn-dancing/" title="Previous Post: Dawn Dancing">&laquo; Dawn Dancing</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/03/05/closing-given-body-in-rack-middleware/" title="next Post: Closing the given body in Rack middleware">Closing the given body in Rack middleware &raquo;</a>
       
     </p>
   </footer>
