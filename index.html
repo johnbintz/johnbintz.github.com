@@ -9,8 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="I&#8217;ve switched to tmux and wanted to simplify my life as best as I can when using it, so I tried a few tmux gems to manage configs
-and decided &hellip;">
+  <meta name="description" content="Stealing an idea from Backbone.js, I decided to try using a collection
+class with an ActiveResource model I was working on. The use case was for &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +75,97 @@ and decided &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/12/experiment-active-record-resource-collections/">Experiment: ActiveResource Collection Classes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-12T00:00:00-04:00" pubdate data-updated="true">Mar 12<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Stealing an idea from <a href="http://backbonejs.org/">Backbone.js</a>, I decided to try using a collection
+class with an ActiveResource model I was working on. The use case was for creating a tree of objects
+based on an <code>acts_as_tree</code> storage method, where child objects have a <code>parent_id</code> set the same as the
+parent&#8217;s <code>id</code>. Here&#8217;s what I originally had:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">class</span> <span class="nc">Category</span> <span class="o">&lt;</span> <span class="no">ActiveResource</span><span class="o">::</span><span class="no">Base</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">tree</span>
+    <span class="vi">@all</span> <span class="o">=</span> <span class="n">all</span>
+    <span class="vi">@all</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">node</span><span class="o">|</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="o">[]</span> <span class="p">}</span>
+
+    <span class="n">top_nodes</span> <span class="o">=</span> <span class="vi">@all</span><span class="o">.</span><span class="n">find_all</span> <span class="p">{</span> <span class="o">|</span><span class="n">category</span><span class="o">|</span> <span class="n">category</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">==</span> <span class="kp">nil</span> <span class="p">}</span><span class="o">.</span><span class="n">sort</span>
+    <span class="n">top_nodes</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">node</span><span class="o">|</span>
+      <span class="n">node</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="vi">@all</span><span class="o">.</span><span class="n">find_all</span> <span class="p">{</span> <span class="o">|</span><span class="n">category</span><span class="o">|</span> <span class="n">category</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="p">}</span><span class="o">.</span><span class="n">sort</span>
+    <span class="k">end</span>
+    <span class="n">top_nodes</span><span class="o">.</span><span class="n">sort</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>Big, long, hard-to-cleanly-test method. Ick. Did this instead:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1"># simple skeleton to hang more on later</span>
+<span class="k">class</span> <span class="nc">ActiveResource</span><span class="o">::</span><span class="no">Collection</span> <span class="o">&lt;</span> <span class="o">::</span><span class="nb">Array</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+    <span class="n">replace</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Category</span> <span class="o">&lt;</span> <span class="no">ActiveResource</span><span class="o">::</span><span class="no">Base</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">tree</span>
+    <span class="no">Categories</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">all</span><span class="p">)</span><span class="o">.</span><span class="n">tree</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">top_node?</span>
+    <span class="n">parent_id</span> <span class="o">==</span> <span class="kp">nil</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Categories</span> <span class="o">&lt;</span> <span class="no">ActiveResource</span><span class="o">::</span><span class="no">Collection</span>
+  <span class="k">def</span> <span class="nf">top_nodes</span>
+    <span class="n">find_all</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:top_node?</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">tree</span>
+    <span class="n">top_nodes</span><span class="o">.</span><span class="n">collect</span> <span class="k">do</span> <span class="o">|</span><span class="n">node</span><span class="o">|</span>
+      <span class="n">node</span><span class="o">.</span><span class="n">tap</span> <span class="p">{</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">find_all</span> <span class="p">{</span> <span class="o">|</span><span class="n">model</span><span class="o">|</span> <span class="n">model</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="p">}</span><span class="o">.</span><span class="n">sort</span> <span class="p">}</span>
+    <span class="k">end</span><span class="o">.</span><span class="n">sort</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>More lines of code, but no mess in the model itself. I&#8217;ll play with the idea and see how well it scales to other situations.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1223,57 +1314,6 @@ covers more nuts and bolts of JHW rather than Jasmine itself, it&#8217;s here: <
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/05/regeneration-self-signed-citadel-certificates/">Regenerating Self-Signed Citadel Certificates</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-05T00:00:00-05:00" pubdate data-updated="true">Dec 5<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>From <a href="http://www.citadel.org/doku.php/faq:systemadmin:how_to_install_a_certificate_signed_by_a_recognized_certificate_authority#problemswithcitadelsautogeneratedcertificates">citadel.org</a>:</p>
-
-<div class="highlight"><pre><code class="bash">service webcit stop
-service citadel stop
-<span class="nb">cd</span> /etc/ssl
-rm -Rf citadel/* webcit/*
-<span class="nb">export </span><span class="nv">O</span><span class="o">=</span><span class="s2">&quot;Your Organization&quot;</span>
-<span class="nb">export </span><span class="nv">OU</span><span class="o">=</span><span class="s2">&quot;Your Server&quot;</span>
-<span class="nb">export </span><span class="nv">CN</span><span class="o">=</span><span class="s2">&quot;*&quot;</span>
-service citadel start
-service webcit start
-</code></pre>
-</div>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1287,6 +1327,10 @@ service webcit start
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/03/12/experiment-active-record-resource-collections/">Experiment: ActiveResource collection classes</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/03/06/that-sense-of-tmux-cameraderie/">That sense of tmux cameraderie</a>
@@ -1322,10 +1366,6 @@ service webcit start
     
       <li class="post">
         <a href="/blog/2012/01/18/under-sopa-this-site-is-now-liable/">Under SOPA, this site is now liable for damages</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/15/javascript-in-my-jquery-objects-as-data-containers/">JavaScript in my jQuery: Objects as data containers</a>
       </li>
     
   </ul>
