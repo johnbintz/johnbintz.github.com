@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-03-12T10:25:04-04:00</updated>
+  <updated>2012-03-28T10:51:58-04:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,52 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Railtie that adds to load paths]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/03/28/railtie-that-adds-to-load-path/"/>
+    <updated>2012-03-28T00:00:00-04:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/03/28/railtie-that-adds-to-load-path</id>
+    <content type="html"><![CDATA[<p>Have to add paths via a Railtie (not an Engine)? Use <code>config.before_configuration</code>:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">module</span> <span class="nn">MyCoolGem</span>
+  <span class="k">class</span> <span class="nc">Railtie</span> <span class="o">&lt;</span> <span class="o">::</span><span class="no">Rails</span><span class="o">::</span><span class="no">Railtie</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">before_configuration</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
+      <span class="n">app</span><span class="o">.</span><span class="n">paths</span><span class="o">[</span><span class="s1">&#39;app/helpers&#39;</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../../../app/helpers&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
+      <span class="n">app</span><span class="o">.</span><span class="n">paths</span><span class="o">[</span><span class="s1">&#39;app/views&#39;</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="no">File</span><span class="o">.</span><span class="n">expand_path</span><span class="p">(</span><span class="s1">&#39;../../../app/views&#39;</span><span class="p">,</span> <span class="bp">__FILE__</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RubyNation notes from talks I went to]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/03/23/rubynation-notes/"/>
+    <updated>2012-03-23T00:00:00-04:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/03/23/rubynation-notes</id>
+    <content type="html"><![CDATA[<h2>JRuby and threading</h2>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">import</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">concurrent</span>
+
+<span class="n">service</span> <span class="o">=</span> <span class="no">Executors</span><span class="o">.</span><span class="n">new_fixed_thread_pool</span>
+<span class="n">service</span><span class="o">.</span><span class="n">execute</span> <span class="p">{</span> <span class="n">codes</span> <span class="p">}</span>
+
+<span class="n">service</span><span class="o">.</span><span class="n">shutdown</span>
+<span class="n">service</span><span class="o">.</span><span class="n">await_termination</span>
+<span class="n">service</span><span class="o">.</span><span class="n">shutdown_now</span>
+</code></pre>
+</div>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Experiment: ActiveResource collection classes]]></title>
@@ -668,46 +714,6 @@ result, including hastily fingerpainted thumbnail done in Sketchbook:</p>
 <p>And here&#8217;s one of a coworker wearing reindeer antlers, fingerpainted in Sketchbook:</p>
 
 <p><img src="http://johnbintz.github.com/assets/christmas-drawings-2011/kelly-reindeer.jpg"><br /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Net::IMAP SSL Verify Mode]]></title>
-    <link href="http://johnbintz.github.com/blog/2011/12/14/net-imap-ssl-verify-mode/"/>
-    <updated>2011-12-14T00:00:00-05:00</updated>
-    <id>http://johnbintz.github.com/blog/2011/12/14/net-imap-ssl-verify-mode</id>
-    <content type="html"><![CDATA[<p>Get this error doing IMAP stuff?</p>
-
-<p><code>SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)</code></p>
-
-
-<p>Try this:</p>
-
-<div class="highlight"><pre><code class="ruby"><span class="no">Net</span><span class="o">::</span><span class="no">IMAP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="ss">:ssl</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:verify_mode</span> <span class="o">=&gt;</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">SSL</span><span class="o">::</span><span class="no">VERIFY_NONE</span> <span class="p">})</span>
-</code></pre>
-</div>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Jasmine Headless WebKit Presentation]]></title>
-    <link href="http://johnbintz.github.com/blog/2011/12/12/jhw-presentation/"/>
-    <updated>2011-12-12T00:00:00-05:00</updated>
-    <id>http://johnbintz.github.com/blog/2011/12/12/jhw-presentation</id>
-    <content type="html"><![CDATA[<p>If you&#8217;re looking for the current iteration of my <a href="http://johnbintz.github.com/jasmine-headless-webkit/">Jasmine Headless WebKit</a> presentation, which
-covers more nuts and bolts of JHW rather than Jasmine itself, it&#8217;s here: <a href="http://johnbintz.github.com/jasmine-headless-webkit-presentation">http://johnbintz.github.com/jasmine-headless-webkit-presentation</a></p>
-
-<p>Even if JS testing isn&#8217;t your thing, I do have a few cool things going on in here:</p>
-
-<ul>
-<li>I&#8217;m using a custom Guard that uses Sprockets to regenerate the presentation&#8217;s CSS and JS</li>
-<li>I have Solarized Light colors on whatever I can style</li>
-<li>I plugged Rack::LiveReload in front of ShowOff so the browser reloads as I work on the slides</li>
-</ul>
-
 ]]></content>
   </entry>
   

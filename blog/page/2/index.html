@@ -9,12 +9,7 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="From citadel.org: service webcit stop
-service citadel stop
-cd /etc/ssl
-rm -Rf citadel/* webcit/*
-export O=&quot;Your Organization&quot;
-export OU=& &hellip;">
+  <meta name="description" content="Get this error doing IMAP stuff? SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL:: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +74,100 @@ export OU=& &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/14/net-imap-ssl-verify-mode/">Net::IMAP SSL Verify Mode</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-14T00:00:00-05:00" pubdate data-updated="true">Dec 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Get this error doing IMAP stuff?</p>
+
+<p><code>SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed (OpenSSL::SSL::SSLError)</code></p>
+
+
+<p>Try this:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="no">Net</span><span class="o">::</span><span class="no">IMAP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="ss">:ssl</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:verify_mode</span> <span class="o">=&gt;</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">SSL</span><span class="o">::</span><span class="no">VERIFY_NONE</span> <span class="p">})</span>
+</code></pre>
+</div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/12/12/jhw-presentation/">Jasmine Headless WebKit Presentation</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-12T00:00:00-05:00" pubdate data-updated="true">Dec 12<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you&#8217;re looking for the current iteration of my <a href="http://johnbintz.github.com/jasmine-headless-webkit/">Jasmine Headless WebKit</a> presentation, which
+covers more nuts and bolts of JHW rather than Jasmine itself, it&#8217;s here: <a href="http://johnbintz.github.com/jasmine-headless-webkit-presentation">http://johnbintz.github.com/jasmine-headless-webkit-presentation</a></p>
+
+<p>Even if JS testing isn&#8217;t your thing, I do have a few cool things going on in here:</p>
+
+<ul>
+<li>I&#8217;m using a custom Guard that uses Sprockets to regenerate the presentation&#8217;s CSS and JS</li>
+<li>I have Solarized Light colors on whatever I can style</li>
+<li>I plugged Rack::LiveReload in front of ShowOff so the browser reloads as I work on the slides</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -622,7 +711,7 @@ The stuff you care about compressing is already compressed from the operation ab
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2011/12/05/migrating-mail-from-old-citadel-server/">Migrating Mail From an Older Citadel Server to a New One</a></h1>
+      <h1 class="entry-title"><a href="/blog/2011/12/05/migrating-mail-from-old-citadel-server/">Migrating mail from an older Citadel server to a new one</a></h1>
     
     
       <p class="meta">
@@ -679,6 +768,14 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/03/28/railtie-that-adds-to-load-path/">Railtie that adds to load paths</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/23/rubynation-notes/">RubyNation notes from talks I went to</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/03/12/experiment-active-record-resource-collections/">Experiment: ActiveResource collection classes</a>
       </li>
     
@@ -708,14 +805,6 @@ which will actualy be faster thatn trying to upgrade anything. :/</p>
     
       <li class="post">
         <a href="/blog/2012/02/02/the-cleanest-bundler-env/">The cleanest Bundler env</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/31/falcon-patch-adventures-for-ruby-1.9.3/">falcon patch adventures for ruby 1.9.3</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/01/18/under-sopa-this-site-is-now-liable/">Under SOPA, this site is now liable for damages</a>
       </li>
     
   </ul>
