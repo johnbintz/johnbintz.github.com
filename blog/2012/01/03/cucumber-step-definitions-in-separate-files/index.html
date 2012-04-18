@@ -118,15 +118,15 @@ I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step def
 
 <p>With <code>foo_steps.rb</code> containing code like this:</p>
 
-<div class="highlight"><pre><code class="ruby"><span class="no">Given</span><span class="sr"> /I have a cat/</span> <span class="k">do</span>
+<div class="highlight"><pre><code class="ruby"><span class="no">Given</span><span class="sr"> /^I have a cat$/</span> <span class="k">do</span>
   <span class="vi">@cat</span> <span class="o">=</span> <span class="no">Cat</span><span class="o">.</span><span class="n">new</span>
 <span class="k">end</span>
 
-<span class="no">When</span><span class="sr"> /I pet the cat/</span> <span class="k">do</span>
+<span class="no">When</span><span class="sr"> /^I pet the cat$/</span> <span class="k">do</span>
   <span class="vi">@result</span> <span class="o">=</span> <span class="vi">@cat</span><span class="o">.</span><span class="n">pet</span>
 <span class="k">end</span>
 
-<span class="no">Then</span><span class="sr"> /the cat should not have hissed/</span> <span class="k">do</span>
+<span class="no">Then</span><span class="sr"> /^the cat should not have hissed$/</span> <span class="k">do</span>
   <span class="vi">@cat</span><span class="o">.</span><span class="n">should_not</span> <span class="n">have_hissed</span>
 <span class="k">end</span>
 </code></pre>
@@ -148,6 +148,9 @@ I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step def
 </code></pre>
 
 <p>It seems to be working so far, but we&#8217;ll see how it scales.</p>
+
+<p><em>Update 2012-04-18</em>: It scales quite well, thank you very much. I have a <a href="/blog/2012/04/18/autogenerate-cucumber-steps-john-style/">Cucumber formatter</a>
+that does exactly this now. Should make most of the Cucumber feature bootstrapping process pretty seamless.</p>
 </div>
 
 
@@ -207,6 +210,10 @@ I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step def
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/04/18/autogenerate-cucumber-steps-john-style/">Autogenerate Cucumber steps, John-style</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/03/28/railtie-that-adds-to-load-path/">Railtie that adds to load paths</a>
       </li>
     
@@ -240,10 +247,6 @@ I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step def
     
       <li class="post">
         <a href="/blog/2012/02/06/expires_in-and-dependent-apis-in-cucumber/">Dependent APIs and expires_in in Cucumber</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/02/the-cleanest-bundler-env/">The cleanest Bundler env</a>
       </li>
     
   </ul>

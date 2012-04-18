@@ -38,7 +38,7 @@
         <loc>
             http://johnbintz.github.com/blog/2012/01/03/cucumber-step-definitions-in-separate-files/
         </loc>
-        <lastmod>2012-01-03T11:36:08-05:00</lastmod>
+        <lastmod>2012-04-18T12:21:25-04:00</lastmod>
     </url>
     <url>
         <loc>http://johnbintz.github.com/blog/2012/01/04/new-years-resolution-one/</loc>
@@ -125,11 +125,17 @@
         <lastmod>2012-03-28T10:51:58-04:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://johnbintz.github.com/blog/2012/04/18/autogenerate-cucumber-steps-john-style/
+        </loc>
+        <lastmod>2012-04-18T12:20:00-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://johnbintz.github.com/blog/archives/</loc>
-        <lastmod>2012-03-28T10:51:58-04:00</lastmod>
+        <lastmod>2012-04-18T12:21:25-04:00</lastmod>
     </url>
     <url>
         <loc>http://johnbintz.github.com/</loc>
-        <lastmod>2012-03-28T10:51:58-04:00</lastmod>
+        <lastmod>2012-04-18T12:21:25-04:00</lastmod>
     </url>
 </urlset>

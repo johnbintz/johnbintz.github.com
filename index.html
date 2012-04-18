@@ -9,7 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Have to add paths via a Railtie (not an Engine)? Use config.before_configuration: module MyCoolGem class Railtie &lt; ::Rails::Railtie config. &hellip;">
+  <meta name="description" content="Following up on an experiment I started earlier this year,
+I created a Cucumber formatter that will write out undefined steps to a directory you &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +75,112 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/18/autogenerate-cucumber-steps-john-style/">Autogenerate Cucumber steps, John-style</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-18T00:00:00-04:00" pubdate data-updated="true">Apr 18<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Following up on an <a href="/blog/2012/01/03/cucumber-step-definitions-in-separate-files/">experiment I started earlier this year</a>,
+I created a Cucumber formatter that will write out undefined steps to a directory you specify. So much less copypaste for
+my workflow.</p>
+
+<p>Stay tuned to the gist for updates. I may even roll a similar functionality into <a href="http://johnbintz.github.com/flowerbox/">Flowerbox</a>.</p>
+
+<div><script src='https://gist.github.com/2414336.js?file='></script>
+<noscript><pre><code># this writes out undefined step definitions, one per file, in the usual way that i do cucumber stuff.
+# it saves a *lot* of copypaste from the terminal. still in progress as i refine the process.
+
+# use it as a formatter: cucumber -f PrettyStepWriter
+# save it to support/env/pretty_step_writer.rb
+
+module StepWriter
+  class &lt;&lt; self
+    def target=(dir)
+      @target = Pathname(dir)
+    end
+
+    def target
+      @target
+    end
+
+    def after_write(&amp;block)
+      if block
+        @after_write = block
+      else
+        @after_write
+      end
+    end
+  end
+
+  def print_snippets(options)
+    undefined = step_mother.steps(:undefined)
+    return if undefined.empty?
+
+    undefined.each do |step|
+      step_name = Cucumber::Undefined === step.exception ? step.exception.step_name : step.name
+      step_multiline_class = step.multiline_arg ? step.multiline_arg.class : nil
+
+      path = StepWriter.target.join(step.actual_keyword.downcase.strip, step_name.underscore.gsub(%r{[^\w]+}, '_') + '.rb')
+
+      @io.puts &quot;Writing new step to #{path}&quot;
+
+      path.parent.mkpath
+      path.open('wb') { |fh| fh.print @step_mother.snippet_text(step.actual_keyword, step_name, step_multiline_class) }
+    end
+
+    StepWriter.after_write.call if StepWriter.after_write
+  end
+end
+
+# make other formatters behave this way by subclassing, then including StepWriter
+
+class PrettyStepWriter &lt; Cucumber::Formatter::Pretty
+  include StepWriter
+end
+
+StepWriter.target = &quot;features/step_definitions&quot;
+
+# after creating new steps, open the step definitions folder so you can rearrange the steps
+# i typically have subdirectories for each &quot;area&quot; that i'm testing. it's fluid, i don't have a really rigid structure for
+# how i organize those. it's still better than monolithic *_steps.rb files (imho).
+
+StepWriter.after_write do
+  system %{open #{StepWriter.target}}
+end
+</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1197,15 +1304,15 @@ I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step def
 
 <p>With <code>foo_steps.rb</code> containing code like this:</p>
 
-<div class="highlight"><pre><code class="ruby"><span class="no">Given</span><span class="sr"> /I have a cat/</span> <span class="k">do</span>
+<div class="highlight"><pre><code class="ruby"><span class="no">Given</span><span class="sr"> /^I have a cat$/</span> <span class="k">do</span>
   <span class="vi">@cat</span> <span class="o">=</span> <span class="no">Cat</span><span class="o">.</span><span class="n">new</span>
 <span class="k">end</span>
 
-<span class="no">When</span><span class="sr"> /I pet the cat/</span> <span class="k">do</span>
+<span class="no">When</span><span class="sr"> /^I pet the cat$/</span> <span class="k">do</span>
   <span class="vi">@result</span> <span class="o">=</span> <span class="vi">@cat</span><span class="o">.</span><span class="n">pet</span>
 <span class="k">end</span>
 
-<span class="no">Then</span><span class="sr"> /the cat should not have hissed/</span> <span class="k">do</span>
+<span class="no">Then</span><span class="sr"> /^the cat should not have hissed$/</span> <span class="k">do</span>
   <span class="vi">@cat</span><span class="o">.</span><span class="n">should_not</span> <span class="n">have_hissed</span>
 <span class="k">end</span>
 </code></pre>
@@ -1227,6 +1334,9 @@ I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step def
 </code></pre>
 
 <p>It seems to be working so far, but we&#8217;ll see how it scales.</p>
+
+<p><em>Update 2012-04-18</em>: It scales quite well, thank you very much. I have a <a href="/blog/2012/04/18/autogenerate-cucumber-steps-john-style/">Cucumber formatter</a>
+that does exactly this now. Should make most of the Cucumber feature bootstrapping process pretty seamless.</p>
 </div>
   
   
@@ -1275,50 +1385,6 @@ the ability to change the canvas size:</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/20/christmas-party-drawings/">Christmas Party Drawings</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-20T00:00:00-05:00" pubdate data-updated="true">Dec 20<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Every year at work I draw on the whiteboard in whatever room we have our Christmas party in. Here&#8217;s this year&#8217;s
-result, including hastily fingerpainted thumbnail done in Sketchbook:</p>
-
-<p><img src="/assets/christmas-drawings-2011/whiteboard-thumbnail.png"><br />
-<img src="/assets/christmas-drawings-2011/whiteboard-inks.jpg"><br /></p>
-
-<p>And here&#8217;s one of a coworker wearing reindeer antlers, fingerpainted in Sketchbook:</p>
-
-<p><img src="/assets/christmas-drawings-2011/kelly-reindeer.jpg"><br /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1332,6 +1398,10 @@ result, including hastily fingerpainted thumbnail done in Sketchbook:</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/04/18/autogenerate-cucumber-steps-john-style/">Autogenerate Cucumber steps, John-style</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/03/28/railtie-that-adds-to-load-path/">Railtie that adds to load paths</a>
@@ -1367,10 +1437,6 @@ result, including hastily fingerpainted thumbnail done in Sketchbook:</p>
     
       <li class="post">
         <a href="/blog/2012/02/06/expires_in-and-dependent-apis-in-cucumber/">Dependent APIs and expires_in in Cucumber</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/02/the-cleanest-bundler-env/">The cleanest Bundler env</a>
       </li>
     
   </ul>
