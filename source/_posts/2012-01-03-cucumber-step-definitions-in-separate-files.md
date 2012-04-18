@@ -19,15 +19,15 @@ So instead of having a setup like this:
 With `foo_steps.rb` containing code like this:
 
 {% highlight ruby %}
-Given /I have a cat/ do
+Given /^I have a cat$/ do
   @cat = Cat.new
 end
 
-When /I pet the cat/ do
+When /^I pet the cat$/ do
   @result = @cat.pet
 end
 
-Then /the cat should not have hissed/ do
+Then /^the cat should not have hissed$/ do
   @cat.should_not have_hissed
 end
 {% endhighlight %}
@@ -46,4 +46,7 @@ I am now trying this:
       bar.feature
 
 It seems to be working so far, but we'll see how it scales.
+
+_Update 2012-04-18_: It scales quite well, thank you very much. I have a [Cucumber formatter](/blog/2012/04/18/autogenerate-cucumber-steps-john-style/)
+that does exactly this now. Should make most of the Cucumber feature bootstrapping process pretty seamless.
 
