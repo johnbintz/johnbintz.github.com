@@ -4,9 +4,13 @@ layout: post
 ---
 Following up on an [experiment I started earlier this year](/blog/2012/01/03/cucumber-step-definitions-in-separate-files/),
 I created a Cucumber formatter that will write out undefined steps to a directory you specify. So much less copypaste for
-my workflow.
+my workflow. [Here's the project](http://github.com/johnbintz/cucumber-step_writer/).
 
-Stay tuned to the gist for updates. I may even roll a similar functionality into [Flowerbox](http://johnbintz.github.com/flowerbox/).
+Also, you can do the same in [Flowerbox](http://johnbintz.github.com/flowerbox/) with your JavaScript Cucumber step definitions:
 
-{% gist 2414336 %}
+{% highlight ruby %}
+Flowerbox.configure do |f|
+  f.reporters.add(:step_writer, :target => 'js-features/step_definitions')
+end
+{% endhighlight %}
 
