@@ -122,6 +122,67 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2012/04/20/flay-for-cucumber-steps/">Experiment: flay for Cucumber steps</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-20T00:00:00-04:00" pubdate data-updated="true">Apr 20<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;m no code metrics freak, but it&#8217;s good to check that stuff every once in a while. Cucumber steps tend to get kind of
+nasty after a while (at least for me), so I&#8217;m trying an experiment where I run <a href="http://ruby.sadi.st/Flay.html">flay</a>
+on the steps after a successful run, just to make sure I&#8217;m not duplicating too much between step definitions.</p>
+
+<p>Save this to <code>features/support/flay.rb</code> and tweak <code>flay_level</code> to a sane number. 0 is probably not the right setting
+if you want to keep your sanity.</p>
+
+<div><script src='https://gist.github.com/2431132.js?file='></script>
+<noscript><pre><code># run flay on your cucumber steps after a successful run. prevent bloat and
+# promote reusability!
+
+flay_exception = nil
+flay_level = 32 # set me to a minimum sane level. don't go nuts refactoring!
+                # code should be cleaner when you're done, not become spaghetti.
+
+After do |s|
+  flay_exception ||= s.exception
+end
+
+at_exit do
+  system %{flay -m #{flay_level} features/step_definitions/**/*.rb} if !flay_exception
+end
+</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2012/04/18/autogenerate-cucumber-steps-john-style/">Autogenerate Cucumber steps, John-style</a></h1>
     
     
@@ -1243,91 +1304,6 @@ all the parts of your Web page have finished loading and that the <em>document</
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/01/03/cucumber-step-definitions-in-separate-files/">Experiment: Cucumber step definitions in separate files</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-03T00:00:00-05:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&#8217;ve been getting back into using <a href="http://cukes.info/">Cucumber</a> for integration/acceptance testing,
-but I didn&#8217;t want to repeat one of the mistakes I made in the past: bloated step definition files.
-There were often step definitions I wanted to use globally for things like making files and such, and
-I didn&#8217;t want to have <code>massive_file_steps.rb</code> with 100 step definitions anymore.</p>
-
-<p>So instead of having a setup like this:</p>
-
-<pre><code>features/
-  step_definitions/
-    foo_steps.rb
-    bar_steps.rb
-  foo.feature
-  bar.feature
-</code></pre>
-
-<p>With <code>foo_steps.rb</code> containing code like this:</p>
-
-<div class="highlight"><pre><code class="ruby"><span class="no">Given</span><span class="sr"> /^I have a cat$/</span> <span class="k">do</span>
-  <span class="vi">@cat</span> <span class="o">=</span> <span class="no">Cat</span><span class="o">.</span><span class="n">new</span>
-<span class="k">end</span>
-
-<span class="no">When</span><span class="sr"> /^I pet the cat$/</span> <span class="k">do</span>
-  <span class="vi">@result</span> <span class="o">=</span> <span class="vi">@cat</span><span class="o">.</span><span class="n">pet</span>
-<span class="k">end</span>
-
-<span class="no">Then</span><span class="sr"> /^the cat should not have hissed$/</span> <span class="k">do</span>
-  <span class="vi">@cat</span><span class="o">.</span><span class="n">should_not</span> <span class="n">have_hissed</span>
-<span class="k">end</span>
-</code></pre>
-</div>
-
-
-<p>I am now trying this:</p>
-
-<pre><code>features/
-  step_definitions/
-    given/
-      i_have_a_cat.rb
-    when/
-      i_pet_the_cat.rb
-    then/
-      cat_should_not_have_hissed.rb
-  foo.feature
-  bar.feature
-</code></pre>
-
-<p>It seems to be working so far, but we&#8217;ll see how it scales.</p>
-
-<p><em>Update 2012-04-18</em>: It scales quite well, thank you very much. I have a <a href="/blog/2012/04/18/autogenerate-cucumber-steps-john-style/">Cucumber formatter</a>
-that does exactly this now. Should make most of the Cucumber feature bootstrapping process pretty seamless.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1344,6 +1320,10 @@ that does exactly this now. Should make most of the Cucumber feature bootstrappi
     
       <li class="post">
         <a href="/blog/2012/04/20/git-hooks-fun/">git hooks fun</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/20/flay-for-cucumber-steps/">Experiment: flay for Cucumber steps</a>
       </li>
     
       <li class="post">
@@ -1376,10 +1356,6 @@ that does exactly this now. Should make most of the Cucumber feature bootstrappi
     
       <li class="post">
         <a href="/blog/2012/02/27/dawn-dancing/">Dawn Dancing</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/16/rvm-default-gemset-json-gem/">RVM, the JSON gem, the @global gemset, and rb_gc bugs</a>
       </li>
     
   </ul>
