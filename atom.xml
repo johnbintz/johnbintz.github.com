@@ -4,7 +4,7 @@
   <title><![CDATA[My webzone]]></title>
   <link href="http://johnbintz.github.com/atom.xml" rel="self"/>
   <link href="http://johnbintz.github.com/"/>
-  <updated>2012-04-20T15:29:53-04:00</updated>
+  <updated>2012-04-21T09:36:42-04:00</updated>
   <id>http://johnbintz.github.com/</id>
   <author>
     <name><![CDATA[John Bintz]]></name>
@@ -12,6 +12,45 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[SheevaPlug bootenv, pre- and post-SD card as root]]></title>
+    <link href="http://johnbintz.github.com/blog/2012/04/21/sheeaplug-bootenv-pre-and-post-sd-card/"/>
+    <updated>2012-04-21T00:00:00-04:00</updated>
+    <id>http://johnbintz.github.com/blog/2012/04/21/sheeaplug-bootenv-pre-and-post-sd-card</id>
+    <content type="html"><![CDATA[<p>So I remember. Be sure to get the uImage for the kernel at <a href="http://sheeva.with-linux.com/sheeva/kernel/2/2.6/2.6.37/2.6.37/">sheeva.with-linux.com</a>.
+I followed the instructions <a href="http://www.randomexploits.com/projects/sheevaplug/sd-boot.htm">here</a> to get the OS off the NAND and onto an SD card.</p>
+
+<div class="highlight"><pre><code class="bash"><span class="c"># pre-SD card</span>
+<span class="nv">bootargs</span><span class="o">=</span><span class="nv">console</span><span class="o">=</span>ttyS0,115200 ubi.mtd<span class="o">=</span>2 <span class="nv">root</span><span class="o">=</span>ubi0:rootfs <span class="nv">rootfstype</span><span class="o">=</span>ubifs <span class="nv">rootdelay</span><span class="o">=</span>15
+<span class="nv">bootcmd</span><span class="o">=</span>nand read.e 0x800000 0x100000 0x400000; bootm 0x800000
+
+<span class="c"># post-SD card</span>
+setenv bootargs_console <span class="s1">&#39;console=ttyS0,115200 rootdelay=15&#39;</span>
+setenv bootargs_root_nand <span class="s1">&#39;ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs&#39;</span>
+setenv bootcmd_nand <span class="s1">&#39;setenv bootargs $(bootargs_console) $(bootargs_root_nand); nand read.e 0x800000 0x100000 0x400000; bootm 0x800000&#39;</span>
+setenv bootargs_root_mmc <span class="s1">&#39;root=/dev/mmcblk0p1&#39;</span>
+setenv bootcmd_mmc <span class="s1">&#39;setenv bootargs $(bootargs_console) $(bootargs_root_mmc); mmcinit; ext2load mmc 0 0x800000 /boot/uImage; bootm 0x800000&#39;</span>
+setenv bootcmd <span class="s1">&#39;run bootcmd_mmc; run bootcmd_nand;&#39;</span>
+
+<span class="c"># if the SD card was uncleanly mounted, you&#39;ll end up booting from NAND. Fix it:</span>
+
+<span class="c"># boot to NAND and...</span>
+sudo e2fsck /dev/mmcblk0p1
+sudo shutdown -r now
+<span class="c"># this can probably be automated in some way.</span>
+
+<span class="c"># ...after the move:</span>
+Filesystem           1K-blocks      Used Available Use% Mounted on
+rootfs                 3811344    696732   2921000  20% /
+/dev/root              3811344    696732   2921000  20% /
+</code></pre>
+</div>
+
+
+<p>BAM.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[git hooks fun]]></title>
@@ -690,15 +729,6 @@ all the parts of your Web page have finished loading and that the <em>document</
 
 
 <p>You&#8217;re welcome.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[New Years Resolution #1]]></title>
-    <link href="http://johnbintz.github.com/blog/2012/01/04/new-years-resolution-one/"/>
-    <updated>2012-01-04T00:00:00-05:00</updated>
-    <id>http://johnbintz.github.com/blog/2012/01/04/new-years-resolution-one</id>
-    <content type="html"><![CDATA[<p>Pay off the technical debt, especially in my test suites.</p>
 ]]></content>
   </entry>
   

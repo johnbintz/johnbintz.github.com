@@ -9,7 +9,8 @@
   <meta name="author" content="John Bintz">
 
   
-  <meta name="description" content="Doing some work on penchant I learned a few things about git hooks: You can add things to the commit in pre-commit but not commit-msg. By the time &hellip;">
+  <meta name="description" content="So I remember. Be sure to get the uImage for the kernel at sheeva.with-linux.com.
+I followed the instructions here to get the OS off the NAND and &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +75,72 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/21/sheeaplug-bootenv-pre-and-post-sd-card/">SheevaPlug bootenv, pre- and post-SD card as root</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-21T00:00:00-04:00" pubdate data-updated="true">Apr 21<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So I remember. Be sure to get the uImage for the kernel at <a href="http://sheeva.with-linux.com/sheeva/kernel/2/2.6/2.6.37/2.6.37/">sheeva.with-linux.com</a>.
+I followed the instructions <a href="http://www.randomexploits.com/projects/sheevaplug/sd-boot.htm">here</a> to get the OS off the NAND and onto an SD card.</p>
+
+<div class="highlight"><pre><code class="bash"><span class="c"># pre-SD card</span>
+<span class="nv">bootargs</span><span class="o">=</span><span class="nv">console</span><span class="o">=</span>ttyS0,115200 ubi.mtd<span class="o">=</span>2 <span class="nv">root</span><span class="o">=</span>ubi0:rootfs <span class="nv">rootfstype</span><span class="o">=</span>ubifs <span class="nv">rootdelay</span><span class="o">=</span>15
+<span class="nv">bootcmd</span><span class="o">=</span>nand read.e 0x800000 0x100000 0x400000; bootm 0x800000
+
+<span class="c"># post-SD card</span>
+setenv bootargs_console <span class="s1">&#39;console=ttyS0,115200 rootdelay=15&#39;</span>
+setenv bootargs_root_nand <span class="s1">&#39;ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs&#39;</span>
+setenv bootcmd_nand <span class="s1">&#39;setenv bootargs $(bootargs_console) $(bootargs_root_nand); nand read.e 0x800000 0x100000 0x400000; bootm 0x800000&#39;</span>
+setenv bootargs_root_mmc <span class="s1">&#39;root=/dev/mmcblk0p1&#39;</span>
+setenv bootcmd_mmc <span class="s1">&#39;setenv bootargs $(bootargs_console) $(bootargs_root_mmc); mmcinit; ext2load mmc 0 0x800000 /boot/uImage; bootm 0x800000&#39;</span>
+setenv bootcmd <span class="s1">&#39;run bootcmd_mmc; run bootcmd_nand;&#39;</span>
+
+<span class="c"># if the SD card was uncleanly mounted, you&#39;ll end up booting from NAND. Fix it:</span>
+
+<span class="c"># boot to NAND and...</span>
+sudo e2fsck /dev/mmcblk0p1
+sudo shutdown -r now
+<span class="c"># this can probably be automated in some way.</span>
+
+<span class="c"># ...after the move:</span>
+Filesystem           1K-blocks      Used Available Use% Mounted on
+rootfs                 3811344    696732   2921000  20% /
+/dev/root              3811344    696732   2921000  20% /
+</code></pre>
+</div>
+
+
+<p>BAM.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1268,42 +1335,6 @@ all the parts of your Web page have finished loading and that the <em>document</
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/01/04/new-years-resolution-one/">New Years Resolution #1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-04T00:00:00-05:00" pubdate data-updated="true">Jan 4<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Pay off the technical debt, especially in my test suites.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1317,6 +1348,10 @@ all the parts of your Web page have finished loading and that the <em>document</
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/04/21/sheeaplug-bootenv-pre-and-post-sd-card/">SheevaPlug bootenv, pre- and post-SD card as root</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/04/20/git-hooks-fun/">git hooks fun</a>
@@ -1352,10 +1387,6 @@ all the parts of your Web page have finished loading and that the <em>document</
     
       <li class="post">
         <a href="/blog/2012/03/05/closing-given-body-in-rack-middleware/">Closing the given body in Rack middleware</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/02/27/dawn-dancing/">Dawn Dancing</a>
       </li>
     
   </ul>
