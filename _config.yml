@@ -3,7 +3,7 @@
 # ----------------------- #
 
 url: http://johnbintz.github.com
-title: My webzone
+title: no
 subtitle: A place for John Bintz to ramble.
 author: John Bintz
 simple_search: http://google.com/search
@@ -18,7 +18,7 @@ date_format: "ordinal"
 subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
-email: john@coswellproductions.com
+email: 27256+johnbintz@users.noreply.github.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
